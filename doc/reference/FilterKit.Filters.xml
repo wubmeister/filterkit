@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="template.xsl"?>
+
+<doc>
+    <path>
+        <item url="FilterKit.xml">FilterKit</item>
+    </path>
+
+    <name>Filters</name>
+    <type>Class</type>
+    <description>Instances of this class will manage all the filters</description>
+
+    <code>var filters = new FilterKit.Filters();</code>
+    <methods>
+        <item name="getHash" params="key, value" return="string" url="FilterKit.Filters.getHash.xml">Generates a search hash based on an key/value pair</item>
+        <item name="checkItem" params="item" return="boolean" url="FilterKit.Filters.checkItem.xml">Checks if an item passes the current filters</item>
+        <item name="addValue" params="name, value, operand, replace" return="void" url="FilterKit.Filters.addValue.xml">Adds a value for a specific key</item>
+        <item name="removeValue" params="name, value, operand" return="void" url="FilterKit.Filters.removeValue.xml">Remove value for a specific key</item>
+        <item name="clearValue" params="name" return="void" url="FilterKit.Filters.clearValue.xml">Clears all the values for a specific key</item>
+        <item name="clearAll" params="" return="void" url="FilterKit.Filters.clearAll.xml">Clears all filters</item>
+        <item name="serializeQuery" params="" return="string" url="FilterKit.Filters.serializeQuery.xml">Generates a query string (The ?... part of a URL) based on the current filters</item>
+        <item name="unserializeQuery" params="query" return="void" url="FilterKit.Filters.unserializeQuery.xml">Parses a query string (The ?... part of a URL) to build the filters. The current filters will be cleared before that.</item>
+        <item name="startBatch" params="" return="void" url="FilterKit.Filters.startBatch.xml">Starts a batch, which means that no change events will be dispatched until the batch is ended</item>
+        <item name="endBatch" params="" return="void" url="FilterKit.Filters.endBatch.xml">Ends a batch and dispatches a change event if changes were made during the batch</item>
+        <item name="setKeyLabel" params="key, label" return="void" url="FilterKit.Filters.setKeyLabel.xml">Sets the label for a filter key</item>
+        <item name="setValueLabel" params="key, value, label" return="void" url="FilterKit.Filters.setValueLabel.xml">Sets the label for a specific key/value pair</item>
+        <item name="setLabels" params="labels" return="void" url="FilterKit.Filters.setLabels.xml">Sets multiple labels</item>
+    </methods>
+</doc>

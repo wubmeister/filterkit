@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="template.xsl"?>
+
+<doc>
+    <path>
+        <item url="FilterKit.xml">FilterKit</item>
+    </path>
+
+    <name>createElement</name>
+    <type>Method</type>
+    <description>Represents a the value for a single filter key</description>
+
+    <definition>FilterKit.createElement(specifications: string [, attributes: object]) : HTMLElement</definition>
+
+    <params>
+        <item name="specifications" type="string">The specifications, written like a CSS selector</item>
+        <item name="attributes" type="object">Extra attributes</item>
+    </params>
+
+    <code><![CDATA[
+        var element = FilterKit.createElement('div.ui.segment#the_segment[data-info="Some info"]', { dataPlugin: 'plugin data' });<br/>
+        // Will create an element which would have the HTML: &lt;div class="ui segment" id="the_segment" data-info="Some info" data-plugin="plugin data"&gt;&lt;/div&gt;
+    ]]></code>
+</doc>

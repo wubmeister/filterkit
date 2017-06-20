@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>FilterKit</title>
+</head>
+<body>
+
+<input type="text" id="search_bar" name="label" placeholder="Search" />
+
+<div class="items">
+    <div class="item">
+        Lorem ipsum
+    </div>
+    <div class="item">
+        Doler sit amet
+    </div>
+</div>
+
+<script src="prereq.js"></script>
+<script src="filterkit.js"></script>
+<script src="conditions.js"></script>
+<script src="filters.js"></script>
+<script src="collections.js"></script>
+<script src="collectionviews.js"></script>
+<script src="controls.js"></script>
+<script src="selectoutput.js"></script>
+<script src="util.js"></script>
+<script src="jquery.js"></script>
+
+<script>
+var filters = FilterKit.Util.Searchbar('#search_bar', '.items');
+
+</script>
+
+</body>
+</html>

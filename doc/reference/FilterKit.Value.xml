@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="template.xsl"?>
+
+<doc>
+    <path>
+        <item url="FilterKit.xml">FilterKit</item>
+    </path>
+
+    <name>Value</name>
+    <type>Class</type>
+    <description>Represents a the value for a single filter key</description>
+
+    <methods>
+        <item name="addCondition" params="operand, value" return="void" url="FilterKit.Value.addCondition.xml">Adds a condition with value to the key</item>
+        <item name="removeCondition" params="operand, value" return="void" url="FilterKit.Value.removeCondition.xml">Removes a value from a condition from the key</item>
+        <item name="checkValue" params="value" return="void" url="FilterKit.Value.checkValue.xml">Checks if a value matches the set conditions</item>
+        <item name="serializeQuery" params="operand, value" return="string" url="FilterKit.Value.serializeQuery.xml">Returns the part of the query string which represents the set conditions</item>
+    </methods>
+</doc>

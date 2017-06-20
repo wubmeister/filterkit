@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="template.xsl"?>
+
+<doc>
+    <name>FilterKit</name>
+    <type>Namespace</type>
+    <description>FilterKit is a collection of tools to filter and select items from collections. This can be used for in-page search, dropdown menus etc.</description>
+
+    <namespaces>
+        <item name="Collections" url="FilterKit.Collections.xml">The Collections namespace contains classes for item collections which can be filtered</item>
+        <item name="CollectionViews" url="FilterKit.CollectionViews.xml">The CollectionViews namespace contains classes for to represent the filtered items</item>
+        <item name="Conditions" url="FilterKit.Conditions.xml">Namespace for internal use. This namespace contains classes for filter conditions</item>
+        <item name="Controls" url="FilterKit.Controls.xml">This namespace contains classes for filter controls (text fields, checkboxes, radio buttons etc.)</item>
+        <item name="SelectOutput" url="FilterKit.SelectOutput.xml">This namespace contains classes to represent the selected items in a collection</item>
+        <item name="Util" url="FilterKit.Util.xml">This namespace contains utility classes to create trivial filtering scenarios</item>
+    </namespaces>
+
+    <classes>
+        <item name="Filters" url="FilterKit.Filters.xml">The class to manage filters</item>
+        <item name="Value" url="FilterKit.Value.xml">Class to manage a single filter value</item>
+    </classes>
+
+    <methods>
+        <item name="createElement" params="specs, attributes" url="FilterKit.createElement.xml">Shorthad function to create an element with id, class names and attributes</item>
+        <item name="getUid" params="prefix" url="FilterKit.getUid.xml">Generates a unique ID</item>
+        <item name="resolveOptions" params="options, defaults" url="FilterKit.resolveOptions.xml">Builds a list with options, using default values to fill in the blanks</item>
+        <item name="resolveElement" params="element, multi" url="FilterKit.resolveElement.xml">Takes a string, jQuery or DOM element and resolves it to a real DOM element</item>
+    </methods>
+</doc>

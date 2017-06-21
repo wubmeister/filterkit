@@ -35,6 +35,19 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     dropdown = FilterKit.resolveElement(el);
 
+    // Wrapper
+    (function() {
+        var wrapper = FilterKit.createElement('div.fdropdownwrap');
+        if (dropdown.classList.contains('fluid')) {
+            wrapper.classList.add('fluid');
+        }
+        if (dropdown.classList.contains('solid')) {
+            wrapper.classList.add('solid');
+        }
+        dropdown.parentElement.insertBefore(wrapper, dropdown);
+        wrapper.appendChild(dropdown);
+    })();
+
     // Ensure value input
     valueInput = dropdown.querySelector('input[type="hidden"]');
     if (!valueInput) {

@@ -50,7 +50,7 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
     },
     selectItem: function (value, replace) {
         var i;
-console.log(value);
+
         if (typeof value == 'object') {
             if (this.items.indexOf(value) > -1) {
                 if (replace) {

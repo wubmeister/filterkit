@@ -13,7 +13,7 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
     getPreviousFilteredItem: function (fromIndex, wrap, returnIndex) {
         var index;
 
-        index = fromIndex = fromIndex || 0;
+        index = fromIndex = (fromIndex == -1 ? 0 : fromIndex);
 
         do {
             index--;
@@ -32,35 +32,42 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
     getNextFilteredItem: function (fromIndex, wrap, returnIndex) {
         var index;
 
-        index = fromIndex = fromIndex || 0;
+        index = fromIndex = (typeof fromIndex == 'undefined') ? -1 : fromIndex;
 
         do {
             index++;
             if (index > this.items.length) {
                 if (wrap) {
-                    index = (index - this.items.length) - 1;
+                    index = 0;
                 } else {
                     index = this.items.length - 1;
                     break;
                 }
             }
-        } while (index != fromIndex && !this.items[index].isFiltered);
+        } while (index != fromIndex && index < this.items.length && !this.items[index].isFiltered);
 
         return returnIndex ? index : this.items[index];
     },
-    selectItem: function (value) {
+    selectItem: function (value, replace) {
         var i;
-
+console.log(value);
         if (typeof value == 'object') {
             if (this.items.indexOf(value) > -1) {
+                if (replace) {
+                    for (i = 0; i < this.items.length; i++) {
+                        this.items[i].isSelected = false;
+                    }
+                }
                 value.isSelected = true;
-                this.dispatch('selectItem', value);
+                this.dispatch('selectItem', value, replace);
             }
         } else {
             for (i = 0; i < this.items.length; i++) {
                 if (this.items[i].value == value) {
                     this.items[i].isSelected = true;
-                    this.dispatch('selectItem', this.items[i]);
+                    this.dispatch('selectItem', this.items[i], replace);
+                } else if (replace) {
+                    this.items[i].isSelected = false;
                 }
             }
         }
@@ -79,8 +86,11 @@ FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
         var elements, callback, that, uid;
 
         function elementToItem(el) {
-            var item = { value: uid, label: el.textContent.replace(/^\s+|\s+$/g, '') };
-            uid++;
+            var item = { value: el.getAttribute('data-value') || uid+'', label: el.textContent.replace(/^\s+|\s+$/g, '') };
+            if (item.value == uid) {
+                uid++;
+                el.setAttribute('data-value', item.value);
+            }
             return item;
         }
 
@@ -95,6 +105,7 @@ FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
         forEach(elements, function (el) {
             var item = callback(el);
             item.element = el;
+            item.isFiltered = true;
             that.items.push(item);
         });
     }
@@ -102,6 +113,9 @@ FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
 FilterKit.Collections.Array = extend(FilterKit.Collections.Base, {
     init: function (items, filters) {
         this.items = items;
+        forEach(this.items, function (item) {
+            item.isFiltered = true;
+        });
         this.setFilters(filters);
     }
 });
@@ -115,6 +129,9 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
     parseResponse: function (responseText) {
         result = JSON.parse(responseText);
         this.items = (result instanceof Array) ? result : result.items;
+        forEach(this.items, function (item) {
+            item.isFiltered = true;
+        });
         this.dispatch('update', this.items);
     },
     fetchItems: function (url) {

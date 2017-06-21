@@ -25,13 +25,13 @@ var FilterKit = {
     createElement: function (spec, attrs) {
         var m, m2, i, tagName = 'div', el;
 
-        if (m = spec.match(/^([a-zA-Z][a-zA-Z\-_:.]*)/)) {
+        if (m = spec.match(/^([a-zA-Z][a-zA-Z\-_:]*)/)) {
             tagName = m[1];
         }
 
         el = document.createElement(tagName);
 
-        m = spec.match(/#([a-zA-Z][a-zA-Z0-9\-_:.]*)/);
+        m = spec.match(/#([a-zA-Z][a-zA-Z0-9\-_:]*)/);
         if (m) {
             el.id = m[1];
         }

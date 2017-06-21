@@ -68,6 +68,37 @@ function extend(base, members) {
     return f;
 }
 
+function collapse(element, toHeight) {
+    toHeight = toHeight || 0;
+    if (!element._transitions) {
+        element._transitions = new Transitions(element);
+        element._heightDelay = element._transitions.getTime('height');
+    }
+
+    delay = element._transitions.getTime('height');
+
+    element._transitions.set('height');
+    element.style.height = element.offsetHeight + 'px';
+    setTimeout(function () {
+        element._transitions.set('height', element._heightDelay);
+        element.style.height = toHeight + 'px';
+    }, 10);
+}
+
+function expand(element) {
+    if (!element._transitions) {
+        element._transitions = new Transitions(element);
+        element._heightDelay = element._transitions.getTime('height');
+    }
+
+    element.style.height = element.scrollHeight + 'px';
+    setTimeout(function () {
+        element._transitions.set('height');
+        element.style.height = 'auto';
+        element._transitions.set('height', element._heightDelay);
+    }, Math.round(element._heightDelay * 1000));
+}
+
 var UtilEventDispatcher = extend(Object, {
     on: function(event, listener) {
         if (!('listeners' in this)) {

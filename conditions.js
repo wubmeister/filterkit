@@ -86,7 +86,7 @@ FilterKit.Conditions.Like = extend(FilterKit.Conditions.Base, {
         this.value = value.toLowerCase();
     },
     checkValue: function (value) {
-        return value.toLowerCase().indexOf(this.value) > -1;
+        return (''+value).toLowerCase().indexOf(this.value) > -1;
     },
     serializeQuery: function (name) {
         var queryParts = [];

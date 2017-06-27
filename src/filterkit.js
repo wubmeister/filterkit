@@ -22,7 +22,7 @@ var FilterKit = {
 
         return options;
     },
-    createElement: function (spec, attrs) {
+    createElement: function (spec, attrs, style) {
         var m, m2, i, tagName = 'div', el;
 
         if (m = spec.match(/^([a-zA-Z][a-zA-Z\-_:]*)/)) {
@@ -52,6 +52,12 @@ var FilterKit = {
         if (attrs) {
             for (i in attrs) {
                 el.setAttribute(i, attrs[i]);
+            }
+        }
+
+        if (style) {
+            for (i in style) {
+                el.style[i] = style[i];
             }
         }
 

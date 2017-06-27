@@ -1,5 +1,5 @@
 FilterKit.CollectionViews.Div = extend(Object, {
-    init (el, collection, options) {
+    init: function (el, collection, options) {
         var templateEl;
 
         this.container = FilterKit.resolveElement(el);

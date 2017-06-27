@@ -6,7 +6,7 @@ FilterKit.Value = extend(Object, {
         if (operand in this.conditions) {
             this.conditions[operand].addValue(value);
         } else {
-            cls = operand[0].toUpperCase() + operand.substr(1);
+            cls = operand ? operand[0].toUpperCase() + operand.substr(1) : 'Eq';
             this.conditions[operand] = new FilterKit.Conditions[cls](value);
         }
     },

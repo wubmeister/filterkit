@@ -107,7 +107,7 @@ FilterKit.Controls.Container = extend(Object, {
 
         function onRadioChange(e) {
             if (this.checked) {
-                filters.addValue(this.name, this.value, true);
+                filters.addValue(this.name, this.value, 'eq', true);
             }
         }
 

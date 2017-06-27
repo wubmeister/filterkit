@@ -1,0 +1,6 @@
+#!/bin/bash
+
+uglifyjs src/prereq.js src/filterkit.js src/conditions.js src/filters.js src/collections.js src/collectionviews.js src/controls.js src/selectoutput.js src/util.js src/jquery.js -o filterkit.min.js --source-map filterkit.min.js.map
+
+mv filterkit.min.js dist/
+mv filterkit.min.js.map dist/

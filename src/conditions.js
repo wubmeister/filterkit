@@ -2,7 +2,7 @@
 
 FilterKit.Conditions.Base = extend(Object, {
     init: function (initValue) {
-        this.value = initValue || '';
+        this.addValue(initValue || '');
     },
     addValue: function (value) {
         if (this.value instanceof Array) {

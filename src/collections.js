@@ -71,6 +71,23 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
                 }
             }
         }
+    },
+    unselectItem: function (value) {
+        var i;
+
+        if (typeof value == 'object') {
+            if (this.items.indexOf(value) > -1) {
+                value.isSelected = false;
+                this.dispatch('unselectItem', value);
+            }
+        } else {
+            for (i = 0; i < this.items.length; i++) {
+                if (this.items[i].value == value) {
+                    this.items[i].isSelected = false;
+                    this.dispatch('unselectItem', this.items[i]);
+                }
+            }
+        }
     }
 });
 FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
@@ -98,7 +115,7 @@ FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
 
         elements = this.container.querySelectorAll(this.options.itemSelector);
         that = this;
-        callback = ('elementToItem' in this.options) ? this.options.elementToItem : elementToItem;
+        callback = ('elementToItem' in this.options) && this.options.elementToItem ? this.options.elementToItem : elementToItem;
 
         this.items = [];
 
@@ -125,6 +142,7 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
             baseUrl: location.pathname
         });
         this.setFilters(filters);
+        this.fetchItems(this.options.baseUrl);
     },
     parseResponse: function (responseText) {
         result = JSON.parse(responseText);
@@ -177,6 +195,6 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
 });
 FilterKit.Collections.AjaxHTML = extend(FilterKit.Collections.AjaxJSON, {
     parseResponse: function (responseText) {
-        that.dispatch('update', responseText);
+        this.dispatch('update', responseText);
     }
 });

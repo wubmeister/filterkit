@@ -29,11 +29,17 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
 };
 
 FilterKit.Util.SelectionDropdown = function (el, options) {
-    var dropdown, input, valueLabel, itemContainer, valueInput,
-        filters, searchInput, collection, collectionView, output,
-        collapseTimeout, hlIndex;
+    var dropdown, input, valueLabel, itemContainer, valueInput, listOutput,
+        filters, searchInput, collection, collectionView, outputs,
+        collapseTimeout, hlIndex, chips, isFocused;
 
     dropdown = FilterKit.resolveElement(el);
+
+    options = FilterKit.resolveOptions(options, {
+        multiple: dropdown.classList.contains('multiple'),
+        collectionType: 'dom',
+        inputName: 'search'
+    });
 
     // Wrapper
     (function() {
@@ -46,6 +52,13 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         }
         dropdown.parentElement.insertBefore(wrapper, dropdown);
         wrapper.appendChild(dropdown);
+
+        // Try list output
+        listOutput = dropdown.querySelector('.list');
+        if (listOutput) {
+            listOutput.classList.add('fblocks');
+            wrapper.parentElement.insertBefore(listOutput, wrapper);
+        }
     })();
 
     // Ensure value input
@@ -61,13 +74,17 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         input = FilterKit.createElement('input[type="text"]');
         dropdown.insertBefore(input, dropdown.firstElementChild);
     }
-    input.name = 'label';
+    input.name = options.collectionType == 'dom' ? 'label' : options.inputName || input.name;
 
     // Ensure value label
     valueLabel = dropdown.querySelector('.value');
     if (!valueLabel) {
         valueLabel = FilterKit.createElement('div.value');
         dropdown.insertBefore(valueLabel, input.nextElementSibling);
+    }
+    if (options.multiple) {
+        valueLabel.classList.add('chips');
+        valueLabel.appendChild(input);
     }
 
     // Item container
@@ -98,12 +115,14 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     function expand() {
         cancelCollapse();
+        isFocused = true;
         dropdown.classList.add('expanded');
     }
 
     function delayToCollapse() {
         collapseTimeout = setTimeout(function () {
             collapseTimeout = null;
+            isFocused = false;
             dropdown.classList.remove('expanded');
         }, 200);
     }
@@ -115,11 +134,41 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         }
     }
 
+    outputs = [];
+
     filters = new FilterKit.Filters();
-    searchInput = new FilterKit.Controls.Textfield(input, filters, { keyboardNavigation: true, realTime: true });
-    collection = new FilterKit.Collections.DOM(itemContainer, filters);
-    collectionView = new FilterKit.CollectionViews.Div(itemContainer, collection);
-    output = new FilterKit.SelectOutput.Text(valueLabel);
+    searchInput = new FilterKit.Controls.Textfield(input, filters, { keyboardNavigation: true, realTime: true, filledClass: 'filled' });
+
+    switch (options.collectionType) {
+        case 'ajax_json':
+            collection = new FilterKit.Collections.AjaxJSON(filters, options);
+            break;
+
+        case 'ajax_html':
+            collection = new FilterKit.Collections.AjaxHTML(filters, options);
+            break;
+
+        default:
+            collection = new FilterKit.Collections.DOM(collectionEl, filters, options);
+            break;
+    }
+
+    collectionView = new FilterKit.CollectionViews.Div(itemContainer, collection, { showSelected: options.multiple ? 'hidden' : 'highlighted', multiple: options.multiple });
+
+    if (options.multiple) {
+        chips = new FilterKit.SelectOutput.Chips(valueLabel);
+        outputs.push(chips);
+        chips.on('removeValue', function (value) {
+            // console.log('Remove ' + value);
+            collection.unselectItem(value);
+        });
+
+        if (listOutput) {
+            outputs.push(new FilterKit.SelectOutput.Blocks(listOutput));
+        }
+    } else {
+        outputs.push(new FilterKit.SelectOutput.Text(valueLabel));
+    }
 
     hlIndex = -1;
 
@@ -132,7 +181,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                 item = index < collection.items.length ? collection.items[index] : null;
 
                 if (item) {
-                    collectionView.highlightItem(item, 'highlight', true);
+                    collectionView.highlightItem(item, 'highlight', true, true);
                     hlIndex = index;
                 }
                 break;
@@ -142,7 +191,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                 item = index < collection.items.length ? collection.items[index] : null;
 
                 if (item) {
-                    collectionView.highlightItem(item, 'highlight', true);
+                    collectionView.highlightItem(item, 'highlight', true, true);
                     hlIndex = index;
                 }
                 break;
@@ -150,16 +199,43 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
             case NAVKEY_RETURN:
                 if (hlIndex > -1) {
                     item = collection.items[hlIndex];
-                    collection.selectItem(item, true);
+                    collection.selectItem(item, !options.multiple);
+                }
+                break;
+
+            case NAVKEY_BACKSPACE_EMPTY:
+                if (chips) {
+                    if (chips.hasPreselected()) {
+                        chips.removePreselected();
+                    } else {
+                        chips.preselectChip();
+                    }
                 }
                 break;
         }
     }
 
     collection.on('selectItem', function (item) {
-        output.selectValue(item.value, item.label);
+        outputs.forEach(function (output) {
+            output.selectValue(item.value, item.label);
+        });
         valueInput.value = item.value;
-        input.blur();
+        input.value = '';
+        input.classList.remove('filled');
+        hlIndex = -1;
+        if (options.multiple) {
+            input.focus();
+        } else {
+            input.blur();
+        }
+    });
+    collection.on('unselectItem', function (item) {
+        outputs.forEach(function (output) {
+            output.unselectValue(item.value);
+        });
+        if (options.multiple && isFocused) {
+            input.focus();
+        }
     });
 
     input.addEventListener('focus', function () {

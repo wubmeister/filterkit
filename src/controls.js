@@ -13,7 +13,8 @@ FilterKit.Controls.Textfield = extend(Object, {
         options = FilterKit.resolveOptions(options, {
             realTime: false,
             keyboardNavigation: false,
-            operand: 'like'
+            operand: 'like',
+            filledClass: null
         });
 
         if (input) {
@@ -32,9 +33,14 @@ FilterKit.Controls.Textfield = extend(Object, {
             input.addEventListener('keyup', function (e) {
                 if (e.which == 13) {
                     e.preventDefault();
-                    filters.addValue(this.name, this.value, options.operand, true);
+                    if (this.value != this.lastValue) filters.addValue(this.name, this.value, options.operand, true);
                 } else if (options.realTime) {
-                    filters.addValue(this.name, this.value, options.operand, true);
+                    if (this.value != this.lastValue) filters.addValue(this.name, this.value, options.operand, true);
+                }
+
+                if (options.filledClass) {
+                    if (this.value) this.classList.add(options.filledClass);
+                    else this.classList.remove(options.filledClass);
                 }
 
                 if (options.keyboardNavigation && (e.which == NAVKEY_BACKSPACE || e.which == NAVKEY_RETURN)) {

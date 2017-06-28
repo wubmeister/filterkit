@@ -23,7 +23,7 @@ var FilterKit = {
         return options;
     },
     createElement: function (spec, attrs, style) {
-        var m, m2, i, tagName = 'div', el;
+        var m, m2, i, tagName = 'div', el, key;
 
         if (m = spec.match(/^([a-zA-Z][a-zA-Z\-_:]*)/)) {
             tagName = m[1];
@@ -51,7 +51,8 @@ var FilterKit = {
 
         if (attrs) {
             for (i in attrs) {
-                el.setAttribute(i, attrs[i]);
+                key = i.replace(/[A-Z]/g, '-$&').toLowerCase();
+                el.setAttribute(key, attrs[i]);
             }
         }
 
@@ -80,3 +81,9 @@ var FilterKit = {
     CollectionViews: {},
     Util: {}
 };
+
+window.addEventListener('click', function (e) {
+    if (_(e.target).closest('.chip').length == 0) {
+        _('.preselect.chip').removeClass('preselect');
+    }
+});

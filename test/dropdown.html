@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>FilterKit</title>
+
+    <style>
+    *, :before, :after {
+        box-sizing: border-box;
+    }
+
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        margin: 0;
+    }
+
+    body, button, input, select, textarea {
+        font: 1em sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem 0;
+    }
+
+    .fdropdownwrap {
+        display: inline-block;
+        height: 1.35714rem;
+    }
+    .fdropdownwrap.fluid {
+        display: block;
+    }
+    .fdropdown {
+        position: relative;
+        display: inline-block;
+        height: 1.35714rem;
+        overflow: hidden;
+        min-width: 100px;
+        padding-right: 1.5rem;
+
+        transition: box-shadow 0.2s;
+    }
+    .fdropdown.fluid {
+        display: block;
+    }
+    .fdropdown input[type="text"] {
+        display: block;
+        -webkit-appearance: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+
+        font-size: 1rem;
+        line-height: 1.35714;
+        height: 1.35714rem;
+    }
+    .fdropdown > input[type="text"] {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        z-index: 2;
+        opacity: 0;
+
+        background-color: white;
+    }
+    .fdropdown input[type="text"]:focus {
+        opacity: 0.5;
+        outline: none;
+    }
+    .fdropdown input[type="text"].filled:focus {
+        opacity: 1;
+    }
+    .fdropdown > .value {
+        font-size: 1rem;
+        line-height: 1.35714;
+        min-height: 1.35714rem;
+        z-index: 1;
+    }
+    .fdropdown .items {
+        position: relative;
+        margin: 0.3125rem 0 0 0;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .fdropdown .items > .item {
+        padding: 0.78571429em 2.5rem 0.78571429em 1em;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .fdropdown .items > .item:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    .fdropdown .items > .item.highlight {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    .fdropdown .items > .item.active {
+        background-color: rgba(0, 0, 0, 0.1);
+        font-weight: bold;
+    }
+    .fdropdown .items > .item + .item {
+        border-top: 1px solid #FAFAFA;
+    }
+
+    .fdropdown .contentpanel {
+        opacity: 0;
+    }
+    .fdropdown.expanded .contentpanel {
+        opacity: 1;
+    }
+
+    .fdropdownwrap.solid {
+        height: 2.71429rem;
+    }
+    .fdropdown.solid {
+        height: 2.71429rem;
+        padding: 0.71429rem 1rem;
+        background-color: white;
+        box-shadow: inset 0 0 0 1px #ddd;
+        border-radius: 3px;
+    }
+    .fdropdown.solid > input[type="text"] {
+        top: 0.71429rem;
+        left: 1rem;
+        width: calc(100% - 2rem);
+    }
+    .fdropdown.solid .contentpanel {
+        padding: 0.71429rem 1px 1px 1px;
+    }
+    .fdropdown:not(.solid) .contentpanel {
+        padding: 1px;
+        background-color: white;
+        box-shadow: inset 0 0 0 1px #5CC9F5;
+        border-radius: 3px;
+        margin-top: 5px;
+    }
+    .fdropdown.solid .items {
+        margin: 0rem -1rem -0.42857rem -1rem;
+    }
+
+    .fdropdown.expanded {
+        height: auto;
+        z-index: 100;
+    }
+    .fdropdown.solid.expanded {
+        box-shadow: inset 0 0 0 1px #5CC9F5, 0 2px 12px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .fdropdown .chips {
+        display: flex;
+        margin: -2px;
+    }
+    .fdropdown .chips input[type="text"] {
+        flex: 1 0 240px;
+    }
+    .fdropdown .chips .chip {
+        padding: 3px 8px;
+        margin: 0 3px 0 0;
+        background-color: #ebebeb;
+        font-size: 12px;
+        border-radius: 2px;
+        font-weight: bold;
+        cursor: default;
+    }
+    .fdropdown .chips .chip.preselect {
+        background-color: #e0e0e0;
+    }
+    .fdropdown .chips .chip .close.icon {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        margin-left: 5px;
+        background-color: black;
+        background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMiAxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMiA0bDggOG0tOCAwbDgtOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4=") no-repeat center center;
+        background-size: 1em 1em;
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .fdropdown .itemtemplate {
+        display: none;
+    }
+
+    .fblocks .block {
+        padding: 1em;
+        background-color: rgba(0, 0, 0, 0.06);
+        margin-bottom: 5px;
+    }
+
+
+
+    .fdropdownwrap {
+        margin-bottom: 1em;
+    }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="fdropdown solid fluid multiple" id="sel_dropdown">
+        <div class="list"></div>
+        <div class="items">
+            <div class="itemtemplate">
+                <div class="item">
+                    <div class="headline"><span class="firstname"><%= firstname %></span> <%= infix %> <span class="lastname"><%= lastname %></span>
+                        <div class="meta">
+                            <span class="email"><%= email %></span> |
+                            <span class="company"><%= company %></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+</div>
+
+<script src="../src/underscore-query.js"></script>
+
+<script src="../src/templatify.js"></script>
+<script src="../src/prereq.js"></script>
+
+<script src="../src/filterkit.js"></script>
+<script src="../src/conditions.js"></script>
+<script src="../src/filters.js"></script>
+<script src="../src/collections.js"></script>
+<script src="../src/collectionviews.js"></script>
+<script src="../src/controls.js"></script>
+<script src="../src/selectoutput.js"></script>
+<script src="../src/util.js"></script>
+<script src="../src/jquery.js"></script>
+
+<script>
+var filters = FilterKit.Util.SelectionDropdown('#sel_dropdown', {
+    collectionType: 'ajax_json',
+    baseUrl: 'datajson.php'
+});
+
+</script>
+
+</body>
+</html>

@@ -98,6 +98,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     input = dropdown.querySelector('input[type="text"]');
     if (!input) {
         input = FilterKit.createElement('input[type="text"]');
+        if (options.placeholder) {
+            input.setAttribute('placeholder', options.placeholder);
+        }
         dropdown.insertBefore(input, dropdown.firstElementChild);
     }
     input.name = options.collectionType == 'dom' ? 'label' : options.inputName || input.name;
@@ -111,6 +114,8 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     if (options.multiple) {
         valueLabel.classList.add('chips');
         valueLabel.appendChild(input);
+    } else {
+        dropdown.insertBefore(FilterKit.createElement('i.fk-searchicon'), dropdown.firstElementChild);
     }
 
     // Item container

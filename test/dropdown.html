@@ -40,21 +40,12 @@
 <body>
 
 <div class="container">
-    <div class="fk-dropdown solid fluid multiple " id="sel_dropdown">
+    <div class="fk-dropdown solid fluid" id="sel_dropdown">
         <!-- <input name="values[]" value="2" />
         <input name="values[]" value="4" /> -->
         <div class="list"></div>
         <div class="items">
-            <div class="itemtemplate">
-                <div class="item">
-                    <div class="headline"><span class="firstname"><%= firstname %></span> <%= infix %> <span class="lastname"><%= lastname %></span>
-                        <div class="meta">
-                            <span class="email"><%= email %></span> |
-                            <span class="company"><%= company %></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -88,6 +79,7 @@ $('#sel_dropdown').fkDropdown({
     collectionType: 'ajax_json',
     baseUrl: 'datajson.php',
     allowAdditions: true,
+    placeholder: 'Select a value',
     blockHtml: function (item) {
         return item.label + '<br/>' + item.firstname + ' ' + item.infix + ' ' + item.lastname;
     },

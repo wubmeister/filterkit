@@ -16,23 +16,23 @@
 
     transition: box-shadow 0.2s;
 }
+.fk-dropdown .dropdown.icon {
+    position: absolute;
+    top: 0.64286em; right: 0.5em;
+}
 .fk-dropdown.fluid {
     display: block;
 }
 .fk-dropdown input[type="text"] {
     display: block;
     -webkit-appearance: none;
-    border: none;
-    padding: 0;
+    border: none !important;
+    padding: 0 0 0 24px !important;
     margin: 0;
 
     font-size: 1rem;
     line-height: 1.35714;
     height: 1.35714rem;
-
-    background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTEiIHI9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4YTlhOSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cGF0aCBkPSJNMTMgMTRsMiAyIiBmaWxsPSJub25lIiBzdHJva2U9IiNhOGE5YTkiLz48cGF0aCBkPSJNMTQgMTVsMy41IDMuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYThhOWE5IiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==") no-repeat left center;
-    background-size: 24px 24px;
-    padding-left: 24px;
 }
 .fk-dropdown > input[type="text"] {
     position: absolute;
@@ -56,6 +56,7 @@
     line-height: 1.35714;
     min-height: 1.35714rem;
     z-index: 1;
+    padding: 0 0 0 24px;
 }
 .fk-dropdown .items {
     position: relative;
@@ -133,6 +134,9 @@
 .fk-dropdown .chips input[type="text"] {
     flex: 1 0 240px;
     margin: 1px;
+
+    background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTEiIHI9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4YTlhOSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cGF0aCBkPSJNMTMgMTRsMiAyIiBmaWxsPSJub25lIiBzdHJva2U9IiNhOGE5YTkiLz48cGF0aCBkPSJNMTQgMTVsMy41IDMuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYThhOWE5IiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==") no-repeat left center;
+    background-size: 24px 24px;
 }
 .fk-dropdown .chips .chip {
     padding: 3px 8px;
@@ -167,4 +171,13 @@
     background-color: rgba(0, 0, 0, 0.06);
     margin-bottom: 5px;
     border-radius: 3px;
+}
+
+.fk-searchicon {
+    position: absolute;
+    top: 0.42857rem; left: 0.71429rem;
+    width: 24px;
+    height: 24px;
+    background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTEiIHI9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4YTlhOSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cGF0aCBkPSJNMTMgMTRsMiAyIiBmaWxsPSJub25lIiBzdHJva2U9IiNhOGE5YTkiLz48cGF0aCBkPSJNMTQgMTVsMy41IDMuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYThhOWE5IiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==") no-repeat left center;
+    background-size: 24px 24px;
 }

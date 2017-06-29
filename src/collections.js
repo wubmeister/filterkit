@@ -94,20 +94,24 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
 
         if (typeof value == 'object') {
             if (this.items.indexOf(value) > -1) {
-                value.isSelected = false;
-                if ((index = this.selectedValues.indexOf(value.value)) > -1) {
-                    this.selectedValues.splice(index, 1);
+                if (this.dispatch('beforeUnselectItem', value) !== false) {
+                    value.isSelected = false;
+                    if ((index = this.selectedValues.indexOf(value.value)) > -1) {
+                        this.selectedValues.splice(index, 1);
+                    }
+                    this.dispatch('unselectItem', value);
                 }
-                this.dispatch('unselectItem', value);
             }
         } else {
             for (i = 0; i < this.items.length; i++) {
                 if (this.items[i].value == value) {
-                    this.items[i].isSelected = false;
-                    if ((index = this.selectedValues.indexOf(this.items[i].value)) > -1) {
-                        this.selectedValues.splice(index, 1);
+                    if (this.dispatch('beforeUnselectItem', this.items[i]) !== false) {
+                        this.items[i].isSelected = false;
+                        if ((index = this.selectedValues.indexOf(this.items[i].value)) > -1) {
+                            this.selectedValues.splice(index, 1);
+                        }
+                        this.dispatch('unselectItem', this.items[i]);
                     }
-                    this.dispatch('unselectItem', this.items[i]);
                 }
             }
         }

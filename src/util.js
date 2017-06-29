@@ -142,6 +142,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         cancelCollapse();
         isFocused = true;
         dropdown.classList.add('expanded');
+        if (options.onShow) {
+            options.onShow();
+        }
     }
 
     function delayToCollapse() {
@@ -149,6 +152,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
             collapseTimeout = null;
             isFocused = false;
             dropdown.classList.remove('expanded');
+            if (options.onHide) {
+                options.onHide();
+            }
         }, 200);
     }
 
@@ -258,10 +264,20 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         valueInput.value = item.value;
         clearInput();
         hlIndex = -1;
+        if (!options.multiple && options.onChange) {
+            options.onChange(item.value, item.label);
+        } else if (options.multiple && options.onLabelCreate) {
+            options.onLabelCreate(item.value, item.label);
+        }
         if (options.multiple && isFocused) {
             input.focus();
         } else {
             input.blur();
+        }
+    });
+    collection.on('beforeUnselectItem', function (item) {
+        if (options.multiple && options.onLabelRemove) {
+            return options.onLabelRemove(item.value);
         }
     });
     collection.on('unselectItem', function (item) {

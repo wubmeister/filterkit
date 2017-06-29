@@ -121,13 +121,18 @@ var UtilEventDispatcher = extend(Object, {
         this.listeners[event].push(listener);
     },
     dispatch: function(event) {
-        var args, i;
+        var args, i, result, r;
 
         if (('listeners' in this) && (event in this.listeners) && this.listeners[event].length > 0) {
             args = Array.prototype.slice.call(arguments, 1);
             for (i = 0; i < this.listeners[event].length; i++) {
-                this.listeners[event][i].apply(this, args);
+                r = this.listeners[event][i].apply(this, args);
+                if (typeof r != 'undefined') {
+                    result = r;
+                }
             }
         }
+
+        return result;
     }
 });

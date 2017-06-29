@@ -202,7 +202,7 @@
     Underscore.prototype.html = function (html) {
         this.each(function (elem, index) {
             if (html instanceof Function) {
-                this.innerHTML = html(this.innerHTML, index);
+                this.innerHTML = html(index, this.innerHTML);
             } else {
                 this.innerHTML = html;
             }
@@ -230,7 +230,7 @@
 
                 if (elem.tagName.toLowerCase() == 'select') {
                     if (value instanceof Function) {
-                        val = value(elem.selectedIndex > -1 ? elem.options[elem.selectedIndex] : null, index);
+                        val = value(index, elem.selectedIndex > -1 ? elem.options[elem.selectedIndex] : null);
                     } else {
                         val = value;
                     }

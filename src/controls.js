@@ -33,9 +33,15 @@ FilterKit.Controls.Textfield = extend(Object, {
             input.addEventListener('keyup', function (e) {
                 if (e.which == 13) {
                     e.preventDefault();
-                    if (this.value != this.lastValue) filters.addValue(this.name, this.value, options.operand, true);
+                    if (this.value != this.lastValue) {
+                        filters.addValue(this.name, this.value, options.operand, true);
+                        that.onChange(this.value);
+                    }
                 } else if (options.realTime) {
-                    if (this.value != this.lastValue) filters.addValue(this.name, this.value, options.operand, true);
+                    if (this.value != this.lastValue) {
+                        filters.addValue(this.name, this.value, options.operand, true);
+                        that.onChange(this.value);
+                    }
                 }
 
                 if (options.filledClass) {
@@ -54,6 +60,8 @@ FilterKit.Controls.Textfield = extend(Object, {
         }
     },
     onNavigationKey: function (key) {
+    },
+    onChange: function (value) {
     }
 });
 FilterKit.Controls.Checkboxes = extend(Object, {

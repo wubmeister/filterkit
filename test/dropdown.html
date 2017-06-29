@@ -219,6 +219,12 @@
                     </div>
                 </div>
             </div>
+            <div class="noresults item">
+                No results found
+            </div>
+            <div class="additem item">
+                Add <strong>{term}</strong>
+            </div>
         </div>
     </div>
 
@@ -248,7 +254,22 @@
 <script>
 var filters = FilterKit.Util.SelectionDropdown('#sel_dropdown', {
     collectionType: 'ajax_json',
-    baseUrl: 'datajson.php'
+    baseUrl: 'datajson.php',
+    onAdd: function (text) {
+        return new Promise(function (resolve, reject) {
+            setTimeout(function () {
+                resolve({
+                    value: 1234,
+                    label: text,
+                    firstname: text,
+                    infix: '',
+                    lastname: '',
+                    email: 'user@domain.com',
+                    company: 'AddCompany'
+                });
+            }, 1000);
+        });
+    }
 });
 
 </script>

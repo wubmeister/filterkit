@@ -1,6 +1,8 @@
-FilterKit.CollectionViews.Div = extend(Object, {
+FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
     init: function (el, collection, options) {
-        var templateEl;
+        var templateEl, view;
+
+        view = this;
 
         this.container = FilterKit.resolveElement(el);
         this.collection = collection;
@@ -16,18 +18,34 @@ FilterKit.CollectionViews.Div = extend(Object, {
             templateEl.parentElement.removeChild(templateEl);
         }
 
+        this.noResultsEl = this.container.querySelector('.noresults');
+        if (this.noResultsEl) {
+            _(this.noResultsEl).remove();
+        }
+
+        this.addItemEl = this.container.querySelector('.additem');
+        if (this.addItemEl) {
+            this.addItemTemplate = this.addItemEl.innerHTML;
+            _(this.addItemEl).remove();
+        }
+
         collection.on('update', this.onUpdate.bind(this));
         collection.on('selectItem', this.onSelect.bind(this));
         collection.on('unselectItem', this.onUnselect.bind(this));
 
         _(this.container).delegate('click', '.item', function (e) {
             e.preventDefault();
-            collection.selectItem(this.getAttribute('data-value'), !options.multiple);
+            if (this == view.addItemEl) {
+                view.dispatch('addItem', view.term);
+            } else if (this.hasAttribute('data-value')) {
+                collection.selectItem(this.getAttribute('data-value'), !options.multiple);
+            }
         });
     },
     onUpdate: function (result) {
         var i, html, numVisible, div;
 
+        numVisible = 0;
         if (typeof result == 'string') {
             this.container.innerHTML = result;
         } else if (this.template) {
@@ -62,6 +80,13 @@ FilterKit.CollectionViews.Div = extend(Object, {
                     }
                 }
             }
+        }
+
+        if ((numVisible == 0 || this.innerHTML == '') && this.noResultsEl) {
+            this.container.appendChild(this.noResultsEl);
+        }
+        if (this.addItemEl && this.term) {
+            this.container.appendChild(this.addItemEl);
         }
     },
     onSelect: function (item, replace) {
@@ -120,6 +145,12 @@ FilterKit.CollectionViews.Div = extend(Object, {
             } else if (currHighlighted.offsetTop + currHighlighted.offsetHeight > this.container.scrollTop + this.container.clientHeight) {
                 this.container.scrollTop = (currHighlighted.offsetTop + currHighlighted.offsetHeight) - this.container.clientHeight;
             }
+        }
+    },
+    setTerm: function (term) {
+        this.term = term;
+        if (this.addItemEl) {
+            this.addItemEl.innerHTML = this.addItemTemplate.replace(/\{term\}/g, term);
         }
     }
 });

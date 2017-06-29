@@ -238,6 +238,17 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                 }
                 break;
         }
+    };
+
+    searchInput.onChange = function (value) {
+        collectionView.setTerm(value);
+    }
+
+    function clearInput() {
+        input.value = '';
+        input.classList.remove('filled');
+        collectionView.setTerm('');
+        filters.addValue(input.name, '', 'like', true);
     }
 
     collection.on('selectItem', function (item) {
@@ -245,9 +256,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
             output.selectValue(item.value, item.label);
         });
         valueInput.value = item.value;
-        input.value = '';
-        input.classList.remove('filled');
-        filters.addValue(input.name, '', 'like', true);
+        clearInput();
         hlIndex = -1;
         if (options.multiple && isFocused) {
             input.focus();
@@ -261,6 +270,24 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         });
         if (options.multiple && isFocused) {
             input.focus();
+        }
+    });
+
+    collectionView.on('addItem', function (term) {
+        var item;
+        if (options.onAdd) {
+            item = options.onAdd(term);
+            if (item) {
+                if (item instanceof Promise) {
+                    item.then(function (item) {
+                        collection.addItem(item);
+                        collection.selectItem(item);
+                    });
+                } else {
+                    collection.addItem(item);
+                    collection.selectItem(item);
+                }
+            }
         }
     });
 

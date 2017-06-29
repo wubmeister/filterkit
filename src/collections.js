@@ -111,6 +111,14 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
                 }
             }
         }
+    },
+    addItem: function (item) {
+        if (this.items && this.items instanceof Array) {
+            item.isFiltered = true;
+            item.isSelected = false;
+            this.items.unshift(item);
+            this.dispatch('update', this.items);
+        }
     }
 });
 FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {

@@ -16,6 +16,8 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
         if (templateEl) {
             this.template = templatify(templateEl.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
             templateEl.parentElement.removeChild(templateEl);
+        } else {
+            this.template = templatify('<div class="item"><%= label %></div>');
         }
 
         this.noResultsEl = this.container.querySelector('.noresults');

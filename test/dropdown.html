@@ -40,9 +40,9 @@
 <body>
 
 <div class="container">
-    <div class="fk-dropdown solid fluid multiple" id="sel_dropdown">
-        <input name="values[]" value="2" />
-        <input name="values[]" value="4" />
+    <div class="fk-dropdown solid fluid multiple " id="sel_dropdown">
+        <!-- <input name="values[]" value="2" />
+        <input name="values[]" value="4" /> -->
         <div class="list"></div>
         <div class="items">
             <div class="itemtemplate">
@@ -55,12 +55,6 @@
                     </div>
                 </div>
             </div>
-            <div class="noresults item">
-                No results found
-            </div>
-            <div class="additem item">
-                Add <strong>{term}</strong>
-            </div>
         </div>
     </div>
 
@@ -71,6 +65,8 @@
     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
     proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 
 <script src="../src/underscore-query.js"></script>
 
@@ -88,9 +84,13 @@
 <script src="../src/jquery.js"></script>
 
 <script>
-var filters = FilterKit.Util.SelectionDropdown('#sel_dropdown', {
+$('#sel_dropdown').fkDropdown({
     collectionType: 'ajax_json',
     baseUrl: 'datajson.php',
+    allowAdditions: true,
+    blockHtml: function (item) {
+        return item.label + '<br/>' + item.firstname + ' ' + item.infix + ' ' + item.lastname;
+    },
     onAdd: function (text) {
         return new Promise(function (resolve, reject) {
             setTimeout(function () {

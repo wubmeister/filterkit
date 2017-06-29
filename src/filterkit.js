@@ -18,6 +18,8 @@ var FilterKit = {
         for (key in defaults) {
             if (!(key in options)) {
                 options[key] = defaults[key];
+            } else if (typeof options[key] == 'object' && typeof defaults[key] == 'object') {
+                options[key] = this.resolveOptions(options[key], defaults[key]);
             }
         }
 

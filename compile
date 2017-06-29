@@ -4,3 +4,6 @@ uglifyjs src/prereq.js src/filterkit.js src/conditions.js src/filters.js src/col
 
 mv filterkit.min.js dist/
 mv filterkit.min.js.map dist/
+
+echo "" > dist/filterkit.css
+find src/css -iname *.css -exec cat {} >> dist/filterkit.css \;

@@ -49,10 +49,11 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
         return returnIndex ? index : this.items[index];
     },
     selectItem: function (value, replace) {
-        var i;
+        var i, found;
 
         if (!('selectedValues' in this)) {
             this.selectedValues = [];
+            this.preSelectedValues = [];
         }
 
         if (typeof value == 'object') {
@@ -65,20 +66,24 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
                 value.isSelected = true;
                 this.selectedValues.push(value.value);
                 this.dispatch('selectItem', value, replace);
+            } else {
+                this.preSelectedValues.push(value.value);
             }
         } else {
             for (i = 0; i < this.items.length; i++) {
                 if (this.items[i].value == value) {
                     this.items[i].isSelected = true;
                     this.selectedValues.push(this.items[i].value);
+                    found = true;
                     this.dispatch('selectItem', this.items[i], replace);
                 } else if (replace) {
                     this.items[i].isSelected = false;
                 }
             }
+            if (!found) {
+                this.preSelectedValues.push(/^\d+$/.test(value) ? parseInt(value) : value);
+            }
         }
-
-        console.log(this.selectedValues);
     },
     unselectItem: function (value) {
         var i, index;
@@ -110,6 +115,7 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
 });
 FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
     init: function (el, filters, options) {
+        this.items = [];
         this.container = FilterKit.resolveElement(el);
         this.options = FilterKit.resolveOptions(options, {
             itemSelector: '.item'
@@ -156,6 +162,7 @@ FilterKit.Collections.Array = extend(FilterKit.Collections.Base, {
 });
 FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
     init: function (filters, options) {
+        this.items = [];
         this.options = FilterKit.resolveOptions(options, {
             baseUrl: location.pathname
         });
@@ -163,15 +170,25 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
         this.fetchItems(this.options.baseUrl);
     },
     parseResponse: function (responseText) {
-        var selectedValues;
+        var selectedValues, preSelectedValues, that;
 
+        that = this;
         selectedValues = this.selectedValues || [];
+        preSelectedValues = this.preSelectedValues || [];
+
         result = JSON.parse(responseText);
         this.items = (result instanceof Array) ? result : result.items;
         forEach(this.items, function (item) {
+            var index;
+
             item.isFiltered = true;
             item.isSelected = (selectedValues.indexOf(item.value) > -1);
+            if ((index = preSelectedValues.indexOf(item.value)) > -1) {
+                preSelectedValues.splice(index, 1);
+                that.selectItem(item);
+            }
         });
+
         this.dispatch('update', this.items);
     },
     fetchItems: function (url) {

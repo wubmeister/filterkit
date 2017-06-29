@@ -35,21 +35,19 @@ FilterKit.CollectionViews.Div = extend(Object, {
             div = document.createElement('div');
 
             for (i = 0; i < result.length; i++) {
-                // if (!result[i].isSelected || this.options.showSelected != 'hidden') {
-                    div.innerHTML = this.template(result[i]);
-                    result[i].element = div.firstElementChild;
-                    this.container.appendChild(result[i].element);
-                    result[i].element.setAttribute('data-value', result[i].value);
+                div.innerHTML = this.template(result[i]);
+                result[i].element = div.firstElementChild;
+                this.container.appendChild(result[i].element);
+                result[i].element.setAttribute('data-value', result[i].value);
 
-                    if (result[i].isFiltered && (!result[i].isSelected || this.options.showSelected != 'hidden')) {
-                        result[i].element.style.display = 'block';
-                        if (++numVisible >= this.options.maxVisible && this.options.maxVisible > 0) {
-                            break;
-                        }
-                    } else {
-                        result[i].element.style.display = 'none';
+                if (result[i].isFiltered && (!result[i].isSelected || this.options.showSelected != 'hidden')) {
+                    result[i].element.style.display = 'block';
+                    if (++numVisible >= this.options.maxVisible && this.options.maxVisible > 0) {
+                        break;
                     }
-                // }
+                } else {
+                    result[i].element.style.display = 'none';
+                }
             }
         } else {
             for (i = 0; i < result.length; i++) {
@@ -72,7 +70,9 @@ FilterKit.CollectionViews.Div = extend(Object, {
                 this.highlightItem(item, 'active', replace);
                 break;
             case 'hidden':
-                item.element.style.display = 'none';
+                if ('element' in item) {
+                    item.element.style.display = 'none';
+                }
                 break;
         }
     },
@@ -82,7 +82,9 @@ FilterKit.CollectionViews.Div = extend(Object, {
                 item.element.classList.remove('active');
                 break;
             case 'hidden':
-                item.element.style.display = 'block';
+                if ('element' in item) {
+                    item.element.style.display = 'block';
+                }
                 break;
         }
     },

@@ -323,6 +323,11 @@
 
         return new Underscore(elems);
     };
+    Underscore.prototype.remove = function () {
+        this.each(function (elem) {
+            elem.parentElement.removeChild(elem);
+        });
+    };
     Object.defineProperty(Underscore.prototype, 'length', { get: function() { return this.elems.length; } });
 
     Underscore.registerPlugin = function (name, definition, defaultOptions) {

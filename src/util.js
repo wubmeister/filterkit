@@ -31,7 +31,7 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
 FilterKit.Util.SelectionDropdown = function (el, options) {
     var dropdown, input, valueLabel, itemContainer, valueInput, listOutput,
         filters, searchInput, collection, collectionView, outputs,
-        collapseTimeout, hlIndex, chips, isFocused;
+        collapseTimeout, hlIndex, chips, isFocused, values;
 
     dropdown = FilterKit.resolveElement(el);
 
@@ -40,6 +40,31 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         collectionType: 'dom',
         inputName: 'search'
     });
+
+    // Get values
+    (function(){
+        var inputs = _('input,select', dropdown);
+
+        values = [];
+        inputs.each(function () {
+            var i;
+
+            if (this.nodeName == 'SELECT') {
+                for (i = 0; i < this.options.length; i++) {
+                    if (this.options[i].selected && this.options[i].value) {
+                        values.push(this.options[i].value);
+                    }
+                }
+            } else if (this.value) {
+                if (this.name.substr(-2) == '[]') {
+                    values.push(this.value);
+                } else {
+                    values = [ this.value ];
+                }
+            }
+        });
+        inputs.remove();
+    })();
 
     // Wrapper
     (function() {
@@ -222,8 +247,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         valueInput.value = item.value;
         input.value = '';
         input.classList.remove('filled');
+        filters.addValue(input.name, '', 'like', true);
         hlIndex = -1;
-        if (options.multiple) {
+        if (options.multiple && isFocused) {
             input.focus();
         } else {
             input.blur();
@@ -245,4 +271,13 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     input.addEventListener('blur', function () {
         delayToCollapse();
     });
+
+    // Preselect values
+    (function(){
+        var i;
+
+        for (i = 0; i < values.length; i++) {
+            collection.selectItem(values[i]);
+        }
+    })();
 };

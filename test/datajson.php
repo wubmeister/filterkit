@@ -14,6 +14,9 @@ if (!$searchText) {
         foreach ($searchFields as $index) {
             if (strlen($searchText) <= strlen($item[$index])) {
                 $visible = $visible || strtolower(substr($item[$index], 0, strlen($searchText))) == $searchText;
+                if ($searchText == strtolower($item[$index])) {
+                    $item['isExactMatch'] = true;
+                }
             }
         }
 

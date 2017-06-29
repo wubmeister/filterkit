@@ -23,7 +23,7 @@ FilterKit.Value = extend(Object, {
 
         for (operand in this.conditions) {
             match = this.conditions[operand].checkValue(value);
-            if (!match) {
+            if (!match || match === FilterKit.EXACT_MATCH) {
                 break;
             }
         }
@@ -58,6 +58,10 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         for (key in this.filters) {
             if (key in item) {
                 match = this.filters[key].checkValue(item[key]);
+
+                if (match === FilterKit.EXACT_MATCH) {
+                    this.dispatch('exactMatch', item);
+                }
 
                 if (!match) {
                     break;

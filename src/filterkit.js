@@ -1,4 +1,5 @@
 var FilterKit = {
+    EXACT_MATCH: 2,
     resolveElement: function (el, multi) {
         if (typeof el == 'string') {
             return multi ? document.querySelectorAll(el) : document.querySelector(el);

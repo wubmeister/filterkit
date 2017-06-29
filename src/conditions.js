@@ -48,19 +48,23 @@ FilterKit.Conditions.Base = extend(Object, {
 
 FilterKit.Conditions.Eq = extend(FilterKit.Conditions.Base, {
     checkValue: function (value) {
+        var result = false;
+
         if (this.value instanceof Array) {
             if (value instanceof Array) {
-                return this.value.intersect(value).length > 0;
+                result = this.value.intersect(value).length > 0;
             } else {
-                return this.value.indexOf(value) > -1;
+                result = this.value.indexOf(value) > -1;
             }
         } else {
             if (value instanceof Array) {
-                return value.indexOf(this.value) > -1;
+                result = value.indexOf(this.value) > -1;
             } else {
-                return this.value == value;
+                result = this.value == value;
             }
         }
+
+        return result;
     },
     serializeQuery: function (name) {
         var queryParts = [];
@@ -86,7 +90,11 @@ FilterKit.Conditions.Like = extend(FilterKit.Conditions.Base, {
         this.value = value.toLowerCase();
     },
     checkValue: function (value) {
-        return (''+value).toLowerCase().indexOf(this.value) > -1;
+        value = (''+value).toLowerCase();
+        if (value == this.value) {
+            return FilterKit.EXACT_MATCH;
+        }
+        return value.indexOf(this.value) > -1;
     },
     serializeQuery: function (name) {
         var queryParts = [];

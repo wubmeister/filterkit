@@ -114,7 +114,7 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
         }
     },
     highlightItem: function (item, className, replace, scrollTo) {
-        var currHighlighted, items;
+        var currHighlighted, items, index;
 
         className = className || 'highlight';
 
@@ -126,15 +126,22 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
         }
 
         currHighlighted = null;
+        items = this.container.querySelectorAll('.item');
         if ('element' in item) {
             item.element.classList.add(className);
             currHighlighted = item.element;
+            forEach(items, function (it, idx) {
+                if (it == currHighlighted) {
+                    index = idx;
+                }
+            });
         } else {
-            items = this.container.querySelectorAll('.item');
-            forEach(items, function (it) {
+            index = 0;
+            forEach(items, function (it, idx) {
                 if (it.getAttribute('data-value') == item.value) {
                     it.classList.add(className);
                     currHighlighted = it;
+                    index = idx;
                 }
             });
         }
@@ -146,6 +153,8 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
                 this.container.scrollTop = (currHighlighted.offsetTop + currHighlighted.offsetHeight) - this.container.clientHeight;
             }
         }
+
+        return index;
     },
     setTerm: function (term) {
         this.term = term;

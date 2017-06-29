@@ -198,6 +198,12 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
         });
 
         this.dispatch('update', this.items);
+
+        forEach(this.items, function (item) {
+            if (item.isExactMatch) {
+                that.filters.dispatch('exactMatch', item);
+            }
+        });
     },
     fetchItems: function (url) {
         var xhr, that;

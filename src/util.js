@@ -299,6 +299,12 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         delayToCollapse();
     });
 
+    filters.on('exactMatch', function (item) {
+        console.log('Exact match', item);
+        hlIndex = collectionView.highlightItem(item, 'highlight', true, true);
+        console.log(hlIndex);
+    });
+
     // Preselect values
     (function(){
         var i;

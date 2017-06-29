@@ -36,16 +36,16 @@ FilterKit.SelectOutput.Chips = extend(UtilEventDispatcher, {
 
         return lastChip;
     },
-    createChild: function (value, label) {
-        var chip = FilterKit.createElement('div.chip', { dataValue: value });
-        chip.innerHTML = label + ' <i class="close icon"></i>' +
-            (this.options.addHiddenInput && this.options.name ? '<input type="hidden" name="' + this.options.name + '" value="' + value + '">' : '');
+    createChild: function (item) {
+        var chip = FilterKit.createElement('div.chip', { dataValue: item.value });
+        chip.innerHTML = item.label + ' <i class="close icon"></i>' +
+            (this.options.addHiddenInput && this.options.name ? '<input type="hidden" name="' + this.options.name + '" value="' + item.value + '">' : '');
         return chip;
     },
-    selectValue: function (value, label, fullItem) {
+    selectValue: function (item, fullItem) {
         var lastChip, child;
 
-        child = this.createChild(value, label);
+        child = this.createChild(item);
         lastChip = this.getLastChip();
         this.container.insertBefore(child, lastChip ? lastChip.nextSibling : this.container.firstChild);
     },
@@ -78,9 +78,9 @@ FilterKit.SelectOutput.Chips = extend(UtilEventDispatcher, {
 });
 FilterKit.SelectOutput.Blocks = extend(FilterKit.SelectOutput.Chips, {
     itemClass: 'block',
-    createChild: function (value, label) {
-        var block = FilterKit.createElement('div.block', { dataValue: value });
-        block.innerHTML = label;
+    createChild: function (item) {
+        var block = FilterKit.createElement('div.block', { dataValue: item.value });
+        block.innerHTML = this.blockHtml ? this.blockHtml(item) : item.label;
         return block;
     }
 });
@@ -88,8 +88,8 @@ FilterKit.SelectOutput.Textfield = extend(Object, {
     init: function (el) {
         this.textField = FilterKit.resolveElement(el);
     },
-    selectValue: function (value, label, fullItem) {
-        this.textField.value = label;
+    selectValue: function (item) {
+        this.textField.value = item.label;
     },
     unselectValue: function (value) {
         this.textField.value = '';
@@ -99,8 +99,8 @@ FilterKit.SelectOutput.Text = extend(Object, {
     init: function (el) {
         this.element = FilterKit.resolveElement(el);
     },
-    selectValue: function (value, label, fullItem) {
-        this.element.innerHTML = label;
+    selectValue: function (item) {
+        this.element.innerHTML = item.label;
     },
     unselectValue: function (value) {
         this.element.innerHTML = '';

@@ -31,14 +31,15 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
 FilterKit.Util.SelectionDropdown = function (el, options) {
     var dropdown, input, valueLabel, itemContainer, valueInput, listOutput,
         filters, searchInput, collection, collectionView, outputs,
-        collapseTimeout, hlIndex, chips, isFocused, values;
+        collapseTimeout, hlIndex, chips, list, isFocused, values;
 
     dropdown = FilterKit.resolveElement(el);
 
     options = FilterKit.resolveOptions(options, {
         multiple: dropdown.classList.contains('multiple'),
         collectionType: 'dom',
-        inputName: 'search'
+        inputName: 'search',
+        blockHtml: null
     });
 
     // Get values
@@ -195,7 +196,11 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         });
 
         if (listOutput) {
-            outputs.push(new FilterKit.SelectOutput.Blocks(listOutput));
+            list = new FilterKit.SelectOutput.Blocks(listOutput);
+            outputs.push(list);
+            if (options.blockHtml) {
+                list.blockHtml = options.blockHtml;
+            }
         }
     } else {
         outputs.push(new FilterKit.SelectOutput.Text(valueLabel));
@@ -259,7 +264,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     collection.on('selectItem', function (item) {
         outputs.forEach(function (output) {
-            output.selectValue(item.value, item.label);
+            output.selectValue(item);
         });
         valueInput.value = item.value;
         clearInput();

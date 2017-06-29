@@ -30,14 +30,14 @@
         padding: 2rem 0;
     }
 
-    .fdropdownwrap {
+    .fk-dropdownwrap {
         display: inline-block;
         height: 1.35714rem;
     }
-    .fdropdownwrap.fluid {
+    .fk-dropdownwrap.fluid {
         display: block;
     }
-    .fdropdown {
+    .fk-dropdown {
         position: relative;
         display: inline-block;
         height: 1.35714rem;
@@ -47,10 +47,10 @@
 
         transition: box-shadow 0.2s;
     }
-    .fdropdown.fluid {
+    .fk-dropdown.fluid {
         display: block;
     }
-    .fdropdown input[type="text"] {
+    .fk-dropdown input[type="text"] {
         display: block;
         -webkit-appearance: none;
         border: none;
@@ -65,7 +65,7 @@
         background-size: 24px 24px;
         padding-left: 24px;
     }
-    .fdropdown > input[type="text"] {
+    .fk-dropdown > input[type="text"] {
         position: absolute;
         top: 0; left: 0;
         width: 100%;
@@ -74,97 +74,97 @@
 
         background-color: white;
     }
-    .fdropdown input[type="text"]:focus {
+    .fk-dropdown input[type="text"]:focus {
         opacity: 0.5;
         outline: none;
     }
-    .fdropdown input[type="text"].filled:focus {
+    .fk-dropdown input[type="text"].filled:focus {
         opacity: 1;
     }
-    .fdropdown > .value {
+    .fk-dropdown > .value {
         font-size: 1rem;
         line-height: 1.35714;
         min-height: 1.35714rem;
         z-index: 1;
     }
-    .fdropdown .items {
+    .fk-dropdown .items {
         position: relative;
         margin: 0.3125rem 0 0 0;
         max-height: 200px;
         overflow-y: auto;
     }
-    .fdropdown .items > .item {
+    .fk-dropdown .items > .item {
         padding: 0.78571429em 2.5rem 0.78571429em 1em;
         cursor: pointer;
         transition: background-color 0.2s;
     }
-    .fdropdown .items > .item:hover {
+    .fk-dropdown .items > .item:hover {
         background-color: rgba(0, 0, 0, 0.05);
     }
-    .fdropdown .items > .item.highlight {
+    .fk-dropdown .items > .item.highlight {
         background-color: rgba(0, 0, 0, 0.1);
     }
-    .fdropdown .items > .item.active {
+    .fk-dropdown .items > .item.active {
         background-color: rgba(0, 0, 0, 0.1);
         font-weight: bold;
     }
-    .fdropdown .items > .item + .item {
+    .fk-dropdown .items > .item + .item {
         border-top: 1px solid #FAFAFA;
     }
 
-    .fdropdown .contentpanel {
+    .fk-dropdown .contentpanel {
         opacity: 0;
     }
-    .fdropdown.expanded .contentpanel {
+    .fk-dropdown.expanded .contentpanel {
         opacity: 1;
     }
 
-    .fdropdownwrap.solid {
+    .fk-dropdownwrap.solid {
         height: 2.71429rem;
     }
-    .fdropdown.solid {
+    .fk-dropdown.solid {
         height: 2.71429rem;
         padding: 0.71429rem 1rem;
         background-color: white;
         box-shadow: inset 0 0 0 1px #ddd;
         border-radius: 3px;
     }
-    .fdropdown.solid > input[type="text"] {
+    .fk-dropdown.solid > input[type="text"] {
         top: 0.71429rem;
         left: 1rem;
         width: calc(100% - 2rem);
     }
-    .fdropdown.solid .contentpanel {
+    .fk-dropdown.solid .contentpanel {
         padding: 0.71429rem 1px 1px 1px;
     }
-    .fdropdown:not(.solid) .contentpanel {
+    .fk-dropdown:not(.solid) .contentpanel {
         padding: 1px;
         background-color: white;
         box-shadow: inset 0 0 0 1px #5CC9F5;
         border-radius: 3px;
         margin-top: 5px;
     }
-    .fdropdown.solid .items {
+    .fk-dropdown.solid .items {
         margin: 0rem -1rem -0.42857rem -1rem;
     }
 
-    .fdropdown.expanded {
+    .fk-dropdown.expanded {
         height: auto;
         z-index: 100;
     }
-    .fdropdown.solid.expanded {
+    .fk-dropdown.solid.expanded {
         box-shadow: inset 0 0 0 1px #5CC9F5, 0 2px 12px 0 rgba(0, 0, 0, 0.12);
     }
 
-    .fdropdown .chips {
+    .fk-dropdown .chips {
         display: flex;
         margin: -2px;
     }
-    .fdropdown .chips input[type="text"] {
+    .fk-dropdown .chips input[type="text"] {
         flex: 1 0 240px;
         margin: 1px;
     }
-    .fdropdown .chips .chip {
+    .fk-dropdown .chips .chip {
         padding: 3px 8px;
         margin: 0 3px 0 0;
         background-color: #ebebeb;
@@ -173,10 +173,10 @@
         font-weight: bold;
         cursor: default;
     }
-    .fdropdown .chips .chip.preselect {
+    .fk-dropdown .chips .chip.preselect {
         background-color: #e0e0e0;
     }
-    .fdropdown .chips .chip .close.icon {
+    .fk-dropdown .chips .chip .close.icon {
         display: inline-block;
         width: 1em;
         height: 1em;
@@ -188,11 +188,11 @@
         cursor: pointer;
     }
 
-    .fdropdown .itemtemplate {
+    .fk-dropdown .itemtemplate {
         display: none;
     }
 
-    .fblocks .block {
+    .fk-blocks .block {
         padding: 1em;
         background-color: rgba(0, 0, 0, 0.06);
         margin-bottom: 5px;
@@ -200,7 +200,7 @@
 
 
 
-    .fdropdownwrap {
+    .fk-dropdownwrap {
         margin-bottom: 1em;
     }
     </style>
@@ -208,7 +208,7 @@
 <body>
 
 <div class="container">
-    <div class="fdropdown solid fluid multiple" id="sel_dropdown">
+    <div class="fk-dropdown solid fluid multiple" id="sel_dropdown">
         <input name="values[]" value="2" />
         <input name="values[]" value="4" />
         <div class="list"></div>

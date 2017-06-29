@@ -68,7 +68,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     // Wrapper
     (function() {
-        var wrapper = FilterKit.createElement('div.fdropdownwrap');
+        var wrapper = FilterKit.createElement('div.fk-dropdownwrap');
         if (dropdown.classList.contains('fluid')) {
             wrapper.classList.add('fluid');
         }
@@ -81,7 +81,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         // Try list output
         listOutput = dropdown.querySelector('.list');
         if (listOutput) {
-            listOutput.classList.add('fblocks');
+            listOutput.classList.add('fk-blocks');
             wrapper.parentElement.insertBefore(listOutput, wrapper);
         }
     })();

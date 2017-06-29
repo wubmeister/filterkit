@@ -35,15 +35,21 @@ FilterKit.CollectionViews.Div = extend(Object, {
             div = document.createElement('div');
 
             for (i = 0; i < result.length; i++) {
-                if (!result[i].isSelected || this.options.showSelected != 'hidden') {
+                // if (!result[i].isSelected || this.options.showSelected != 'hidden') {
                     div.innerHTML = this.template(result[i]);
                     result[i].element = div.firstElementChild;
                     this.container.appendChild(result[i].element);
                     result[i].element.setAttribute('data-value', result[i].value);
-                    if (++numVisible >= this.options.maxVisible && this.options.maxVisible > 0) {
-                        break;
+
+                    if (result[i].isFiltered && (!result[i].isSelected || this.options.showSelected != 'hidden')) {
+                        result[i].element.style.display = 'block';
+                        if (++numVisible >= this.options.maxVisible && this.options.maxVisible > 0) {
+                            break;
+                        }
+                    } else {
+                        result[i].element.style.display = 'none';
                     }
-                }
+                // }
             }
         } else {
             for (i = 0; i < result.length; i++) {

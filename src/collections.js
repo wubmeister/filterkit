@@ -51,6 +51,10 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
     selectItem: function (value, replace) {
         var i;
 
+        if (!('selectedValues' in this)) {
+            this.selectedValues = [];
+        }
+
         if (typeof value == 'object') {
             if (this.items.indexOf(value) > -1) {
                 if (replace) {
@@ -59,31 +63,45 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
                     }
                 }
                 value.isSelected = true;
+                this.selectedValues.push(value.value);
                 this.dispatch('selectItem', value, replace);
             }
         } else {
             for (i = 0; i < this.items.length; i++) {
                 if (this.items[i].value == value) {
                     this.items[i].isSelected = true;
+                    this.selectedValues.push(this.items[i].value);
                     this.dispatch('selectItem', this.items[i], replace);
                 } else if (replace) {
                     this.items[i].isSelected = false;
                 }
             }
         }
+
+        console.log(this.selectedValues);
     },
     unselectItem: function (value) {
-        var i;
+        var i, index;
+
+        if (!('selectedValues' in this)) {
+            this.selectedValues = [];
+        }
 
         if (typeof value == 'object') {
             if (this.items.indexOf(value) > -1) {
                 value.isSelected = false;
+                if ((index = this.selectedValues.indexOf(value.value)) > -1) {
+                    this.selectedValues.splice(index, 1);
+                }
                 this.dispatch('unselectItem', value);
             }
         } else {
             for (i = 0; i < this.items.length; i++) {
                 if (this.items[i].value == value) {
                     this.items[i].isSelected = false;
+                    if ((index = this.selectedValues.indexOf(this.items[i].value)) > -1) {
+                        this.selectedValues.splice(index, 1);
+                    }
                     this.dispatch('unselectItem', this.items[i]);
                 }
             }
@@ -145,10 +163,14 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
         this.fetchItems(this.options.baseUrl);
     },
     parseResponse: function (responseText) {
+        var selectedValues;
+
+        selectedValues = this.selectedValues || [];
         result = JSON.parse(responseText);
         this.items = (result instanceof Array) ? result : result.items;
         forEach(this.items, function (item) {
             item.isFiltered = true;
+            item.isSelected = (selectedValues.indexOf(item.value) > -1);
         });
         this.dispatch('update', this.items);
     },

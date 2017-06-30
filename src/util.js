@@ -40,6 +40,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         multiple: dropdown.classList.contains('multiple'),
         collectionType: 'dom',
         inputName: 'search',
+        fieldName: null,
         blockHtml: null,
         list: null
     });
@@ -63,6 +64,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                     values.push(this.value);
                 } else {
                     values = [ this.value ];
+                }
+                if (!options.fieldName) {
+                    options.fieldName = this.name;
                 }
             }
         });
@@ -210,10 +214,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     collectionView = new FilterKit.CollectionViews.Div(itemContainer, collection, { showSelected: options.multiple ? 'hidden' : 'highlighted', multiple: options.multiple });
 
     if (options.multiple) {
-        chips = new FilterKit.SelectOutput.Chips(valueLabel);
+        chips = new FilterKit.SelectOutput.Chips(valueLabel, { name: options.fieldName, addHiddenInput: true });
         outputs.push(chips);
         chips.on('removeValue', function (value) {
-            // console.log('Remove ' + value);
             collection.unselectItem(value);
         });
 
@@ -285,8 +288,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     }
 
     function updateWrapperHeight() {
-        console.log(valueLabel.scrollHeight);
-        wrapper.style.height = (valueLabel.scrollHeight + wrapperPadding - 6) + 'px';
+        wrapper.style.height = (valueLabel.scrollHeight + wrapperPadding - (options.multiple ? 6 : 0)) + 'px';
     }
 
     function updateDirection() {
@@ -294,7 +296,6 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
             vpHeight = window.innerHeight || document.documentElement.offsetHeight,
             offset = _(wrapper).offset();
 
-        console.log(contentPanel.offsetHeight, scrollTop, vpHeight);
         if (offset.top + wrapper.offsetHeight + contentPanel.offsetHeight > scrollTop + vpHeight && offset.top - contentPanel.offsetHeight > scrollTop) {
             dropdown.classList.add('reverse');
         } else {
@@ -363,9 +364,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     });
 
     filters.on('exactMatch', function (item) {
-        console.log('Exact match', item);
         hlIndex = collectionView.highlightItem(item, 'highlight', true, true);
-        console.log(hlIndex);
     });
 
     // Preselect values

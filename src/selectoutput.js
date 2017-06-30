@@ -3,7 +3,7 @@ FilterKit.SelectOutput.Chips = extend(UtilEventDispatcher, {
     init: function (el, options) {
         var output = this;
 
-        this.options = FilterKit.resolveOptions({
+        this.options = FilterKit.resolveOptions(options, {
             name: null,
             addHiddenInput: false
         });

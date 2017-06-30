@@ -82,6 +82,7 @@ $('#sel_dropdown').fkDropdown({
     allowAdditions: true,
     placeholder: 'Select a value',
     list: $('.list'),
+    fieldName: 'dingen[]',
     blockHtml: function (item) {
         return item.label + '<br/>' + item.firstname + ' ' + item.infix + ' ' + item.lastname;
     },

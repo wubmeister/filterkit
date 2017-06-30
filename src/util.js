@@ -32,7 +32,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     var dropdown, input, valueLabel, itemContainer, valueInput, listOutput,
         filters, searchInput, collection, collectionView, outputs,
         collapseTimeout, hlIndex, chips, list, isFocused, values, wrapper,
-        wrapperPadding;
+        wrapperPadding, display, contentPanel;
 
     dropdown = FilterKit.resolveElement(el);
 
@@ -98,13 +98,16 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
         style = getComputedStyle(dropdown);
         wrapperPadding = parseInt(style.paddingTop) + parseInt(style.paddingBottom) + (wrapper.offsetHeight - wrapper.clientHeight);
+
+        display = FilterKit.createElement('div.fk-disp');
+        dropdown.insertBefore(display, dropdown.firstChild);
     })();
 
     // Ensure value input
     valueInput = dropdown.querySelector('input[type="hidden"]');
     if (!valueInput) {
         valueInput = FilterKit.createElement('input[type="hidden"]');
-        dropdown.insertBefore(valueInput, dropdown.firstElementChild);
+        display.insertBefore(valueInput, display.firstElementChild);
     }
 
     // Ensure textfield
@@ -114,7 +117,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         if (options.placeholder) {
             input.setAttribute('placeholder', options.placeholder);
         }
-        dropdown.insertBefore(input, dropdown.firstElementChild);
+        display.insertBefore(input, display.firstElementChild);
     }
     input.name = options.collectionType == 'dom' ? 'label' : options.inputName || input.name;
 
@@ -122,13 +125,13 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     valueLabel = dropdown.querySelector('.value');
     if (!valueLabel) {
         valueLabel = FilterKit.createElement('div.value');
-        dropdown.insertBefore(valueLabel, input.nextElementSibling);
+        input.parentElement.insertBefore(valueLabel, input.nextElementSibling);
     }
     if (options.multiple) {
         valueLabel.classList.add('chips');
         valueLabel.appendChild(input);
     } else {
-        dropdown.insertBefore(FilterKit.createElement('i.fk-searchicon'), dropdown.firstElementChild);
+        display.insertBefore(FilterKit.createElement('i.fk-searchicon'), display.firstElementChild);
     }
 
     // Item container
@@ -136,7 +139,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     // Create extra elements
     (function(){
-        var contentPanel, panel, ddIcon;
+        var panel, ddIcon;
 
         contentPanel = FilterKit.createElement('div.contentpanel');
         dropdown.appendChild(contentPanel);
@@ -153,12 +156,13 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         ddIcon = dropdown.querySelector('.dropdown.icon');
         if (!ddIcon) {
             ddIcon = FilterKit.createElement('i.dropdown.icon');
-            dropdown.insertBefore(ddIcon, contentPanel);
         }
+        display.appendChild(ddIcon);
     })();
 
     function expand() {
         cancelCollapse();
+        updateDirection();
         isFocused = true;
         dropdown.classList.add('expanded');
         if (options.onShow) {
@@ -283,6 +287,19 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     function updateWrapperHeight() {
         console.log(valueLabel.scrollHeight);
         wrapper.style.height = (valueLabel.scrollHeight + wrapperPadding - 6) + 'px';
+    }
+
+    function updateDirection() {
+        var scrollTop = window.pageYOffset,
+            vpHeight = window.innerHeight || document.documentElement.offsetHeight,
+            offset = _(wrapper).offset();
+
+        console.log(contentPanel.offsetHeight, scrollTop, vpHeight);
+        if (offset.top + wrapper.offsetHeight + contentPanel.offsetHeight > scrollTop + vpHeight && offset.top - contentPanel.offsetHeight > scrollTop) {
+            dropdown.classList.add('reverse');
+        } else {
+            dropdown.classList.remove('reverse');
+        }
     }
 
     collection.on('selectItem', function (item) {

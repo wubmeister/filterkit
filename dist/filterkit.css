@@ -2,27 +2,28 @@
 .fk-dropdownwrap {
     display: inline-block;
     height: 1.35714rem;
+    position: relative;
 }
 .fk-dropdownwrap.fluid {
     display: block;
 }
 
 .fk-dropdown {
-    position: relative;
-    display: inline-block;
+    position: absolute;
+    top: 0; right: 0; left: 0;
     height: 100%;
     overflow: hidden;
     min-width: 100px;
     padding-right: 1.5rem;
+
+    display: flex;
+    flex-direction: column;
 
     transition: box-shadow 0.2s;
 }
 .fk-dropdown .dropdown.icon {
     position: absolute;
     top: 0.64286em; right: 0.5em;
-}
-.fk-dropdown.fluid {
-    display: block;
 }
 .fk-dropdown input[type="text"] {
     display: block;
@@ -182,4 +183,16 @@
     height: 24px;
     background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTEiIHI9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2E4YTlhOSIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cGF0aCBkPSJNMTMgMTRsMiAyIiBmaWxsPSJub25lIiBzdHJva2U9IiNhOGE5YTkiLz48cGF0aCBkPSJNMTQgMTVsMy41IDMuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYThhOWE5IiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==") no-repeat left center;
     background-size: 24px 24px;
+}
+
+.fk-dropdown.reverse {
+    flex-direction: column-reverse;
+    top: auto;
+    bottom: 0;
+}
+.fk-dropdown.solid.reverse .contentpanel {
+    padding: 1px 1px 0.71429rem 1px;
+}
+.fk-dropdown.solid.reverse .items {
+    margin: -0.71429rem -1rem 0rem -1rem;
 }

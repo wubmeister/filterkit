@@ -40,10 +40,13 @@
 <body>
 
 <div class="container">
-    <div class="fk-dropdown solid fluid" id="sel_dropdown">
+    <div style="background-color: red">
+        <div class="list"></div>
+    </div>
+
+    <div class="fk-dropdown solid fluid multiple" id="sel_dropdown">
         <!-- <input name="values[]" value="2" />
         <input name="values[]" value="4" /> -->
-        <div class="list"></div>
         <div class="items">
 
         </div>
@@ -80,6 +83,7 @@ $('#sel_dropdown').fkDropdown({
     baseUrl: 'datajson.php',
     allowAdditions: true,
     placeholder: 'Select a value',
+    list: $('.list'),
     blockHtml: function (item) {
         return item.label + '<br/>' + item.firstname + ' ' + item.infix + ' ' + item.lastname;
     },

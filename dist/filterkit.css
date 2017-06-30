@@ -131,6 +131,7 @@
 .fk-dropdown .chips {
     display: flex;
     margin: -2px -4px;
+    padding-left: 0;
 }
 .fk-dropdown .chips input[type="text"] {
     flex: 1 0 240px;

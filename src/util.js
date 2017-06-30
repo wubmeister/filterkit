@@ -39,7 +39,8 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         multiple: dropdown.classList.contains('multiple'),
         collectionType: 'dom',
         inputName: 'search',
-        blockHtml: null
+        blockHtml: null,
+        list: null
     });
 
     // Get values
@@ -80,10 +81,16 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         wrapper.appendChild(dropdown);
 
         // Try list output
-        listOutput = dropdown.querySelector('.list');
+        if (options.list) {
+            listOutput = FilterKit.resolveElement(options.list);
+        } else {
+            listOutput = dropdown.querySelector('.list');
+        }
         if (listOutput) {
             listOutput.classList.add('fk-blocks');
-            wrapper.parentElement.insertBefore(listOutput, wrapper);
+            if (!options.list || _(options.list).closest('.fk-dropdown').length > 0) {
+                wrapper.parentElement.insertBefore(listOutput, wrapper);
+            }
         }
     })();
 

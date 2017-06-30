@@ -10,7 +10,7 @@
 .fk-dropdown {
     position: relative;
     display: inline-block;
-    height: 1.35714rem;
+    height: 100%;
     overflow: hidden;
     min-width: 100px;
     padding-right: 1.5rem;
@@ -95,7 +95,6 @@
     height: 2.71429rem;
 }
 .fk-dropdown.solid {
-    height: 2.71429rem;
     padding: 0.71429rem 1rem;
     background-color: white;
     box-shadow: inset 0 0 0 1px #ddd;
@@ -130,6 +129,7 @@
 
 .fk-dropdown .chips {
     display: flex;
+    flex-wrap: wrap;
     margin: -2px -4px;
     padding-left: 0;
 }
@@ -142,7 +142,7 @@
 }
 .fk-dropdown .chips .chip {
     padding: 3px 8px;
-    margin: 0 3px 0 0;
+    margin: 0 3px 3px 0;
     background-color: #ebebeb;
     font-size: 12px;
     border-radius: 2px;

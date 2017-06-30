@@ -10,7 +10,7 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
         }
         this.dispatch('update', this.items);
     },
-    getPreviousFilteredItem: function (fromIndex, wrap, returnIndex) {
+    getPreviousFilteredItem: function (fromIndex, wrap, returnIndex, skipSelected) {
         var index;
 
         index = fromIndex = (fromIndex == -1 ? 0 : fromIndex);
@@ -25,11 +25,14 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
                     break;
                 }
             }
-        } while (index != fromIndex && !this.items[index].isFiltered);
+            // if (skipSelected && this.items[index].isFiltered && this.items[index].isSelected) {
+            //     index--;
+            // }
+        } while (index != fromIndex && (!this.items[index].isFiltered || (skipSelected && this.items[index].isSelected)));
 
         return returnIndex ? index : this.items[index];
     },
-    getNextFilteredItem: function (fromIndex, wrap, returnIndex) {
+    getNextFilteredItem: function (fromIndex, wrap, returnIndex, skipSelected) {
         var index;
 
         index = fromIndex = (typeof fromIndex == 'undefined') ? -1 : fromIndex;
@@ -44,7 +47,7 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
                     break;
                 }
             }
-        } while (index != fromIndex && index < this.items.length && !this.items[index].isFiltered);
+        } while (index != fromIndex && index < this.items.length && (!this.items[index].isFiltered || (skipSelected && this.items[index].isSelected)));
 
         return returnIndex ? index : this.items[index];
     },

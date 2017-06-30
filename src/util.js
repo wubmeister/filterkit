@@ -31,7 +31,8 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
 FilterKit.Util.SelectionDropdown = function (el, options) {
     var dropdown, input, valueLabel, itemContainer, valueInput, listOutput,
         filters, searchInput, collection, collectionView, outputs,
-        collapseTimeout, hlIndex, chips, list, isFocused, values;
+        collapseTimeout, hlIndex, chips, list, isFocused, values, wrapper,
+        wrapperPadding;
 
     dropdown = FilterKit.resolveElement(el);
 
@@ -70,7 +71,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     // Wrapper
     (function() {
-        var wrapper = FilterKit.createElement('div.fk-dropdownwrap');
+        var style;
+
+        wrapper = FilterKit.createElement('div.fk-dropdownwrap');
         if (dropdown.classList.contains('fluid')) {
             wrapper.classList.add('fluid');
         }
@@ -92,6 +95,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                 wrapper.parentElement.insertBefore(listOutput, wrapper);
             }
         }
+
+        style = getComputedStyle(dropdown);
+        wrapperPadding = parseInt(style.paddingTop) + parseInt(style.paddingBottom) + (wrapper.offsetHeight - wrapper.clientHeight);
     })();
 
     // Ensure value input
@@ -225,7 +231,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
         switch (key) {
             case NAVKEY_UPARROW:
-                index = collection.getPreviousFilteredItem(hlIndex, false, true);
+                index = collection.getPreviousFilteredItem(hlIndex, false, true, options.multiple);
                 item = index < collection.items.length ? collection.items[index] : null;
 
                 if (item) {
@@ -235,7 +241,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                 break;
 
             case NAVKEY_DOWNARROW:
-                index = collection.getNextFilteredItem(hlIndex, false, true);
+                index = collection.getNextFilteredItem(hlIndex, false, true, options.multiple);
                 item = index < collection.items.length ? collection.items[index] : null;
 
                 if (item) {
@@ -274,6 +280,11 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         filters.addValue(input.name, '', 'like', true);
     }
 
+    function updateWrapperHeight() {
+        console.log(valueLabel.scrollHeight);
+        wrapper.style.height = (valueLabel.scrollHeight + wrapperPadding - 6) + 'px';
+    }
+
     collection.on('selectItem', function (item) {
         outputs.forEach(function (output) {
             output.selectValue(item);
@@ -286,6 +297,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         } else if (options.multiple && options.onLabelCreate) {
             options.onLabelCreate(item.value, item.label);
         }
+        updateWrapperHeight();
         if (options.multiple && isFocused) {
             input.focus();
         } else {
@@ -301,6 +313,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         outputs.forEach(function (output) {
             output.unselectValue(item.value);
         });
+        updateWrapperHeight();
         if (options.multiple && isFocused) {
             input.focus();
         }

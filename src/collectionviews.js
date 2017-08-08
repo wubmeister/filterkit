@@ -9,13 +9,16 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
         this.options = FilterKit.resolveOptions(options, {
             showSelected: 'highlighted',
             maxVisible: 0,
-            multiple: false
+            multiple: false,
+            template: null
         });
 
         templateEl = this.container.querySelector('.itemtemplate');
         if (templateEl) {
             this.template = templatify(templateEl.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
             templateEl.parentElement.removeChild(templateEl);
+        } else if (options.template) {
+            this.template = templatify(options.template);
         } else {
             this.template = templatify('<div class="item"><%= label %></div>');
         }
@@ -55,13 +58,22 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
             div = document.createElement('div');
 
             for (i = 0; i < result.length; i++) {
-                div.innerHTML = this.template(result[i]);
+                html = this.template(result[i]);
+                if (/^\s*<tr\b/.test(html) && div.nodeName != 'TABLE') {
+                    div = document.createElement('table');
+                }
+
+                div.innerHTML = html;
                 result[i].element = div.firstElementChild;
+                if (result[i].element.nodeName == 'TBODY') {
+                    result[i].element = result[i].element.firstElementChild;
+                }
+
                 this.container.appendChild(result[i].element);
                 result[i].element.setAttribute('data-value', result[i].value);
 
                 if (result[i].isFiltered && (!result[i].isSelected || this.options.showSelected != 'hidden')) {
-                    result[i].element.style.display = 'block';
+                    result[i].element.style.display = result[i].element.nodeName == 'TR' ? 'table-row' : 'block';
                     if (++numVisible >= this.options.maxVisible && this.options.maxVisible > 0) {
                         break;
                     }
@@ -73,7 +85,7 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
             for (i = 0; i < result.length; i++) {
                 if ('element' in result[i]) {
                     if (result[i].isFiltered && (!result[i].isSelected || this.options.showSelected != 'hidden')) {
-                        result[i].element.style.display = 'block';
+                        result[i].element.style.display = result[i].element.nodeName == 'TR' ? 'table-row' : 'block';
                         if (++numVisible >= this.options.maxVisible && this.options.maxVisible > 0) {
                             break;
                         }

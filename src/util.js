@@ -4,7 +4,8 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
     options = FilterKit.resolveOptions(options, {
         realTime: false,
         collectionType: 'dom',
-        baseUrl: '/'
+        baseUrl: '/',
+        initialCollect: true
     });
 
     filters = new FilterKit.Filters();
@@ -23,7 +24,7 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
             break;
     }
 
-    collectionView = new FilterKit.CollectionViews.Div(collectionEl, collection);
+    collectionView = new FilterKit.CollectionViews.Div(collectionEl, collection, { template: options.template || null });
 
     return filters;
 };

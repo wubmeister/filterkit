@@ -179,10 +179,13 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
     init: function (filters, options) {
         this.items = [];
         this.options = FilterKit.resolveOptions(options, {
-            baseUrl: location.pathname
+            baseUrl: location.pathname,
+            initialCollect: true
         });
         this.setFilters(filters);
-        this.fetchItems(this.options.baseUrl);
+        if (options.initialCollect) {
+            this.fetchItems(this.options.baseUrl);
+        }
     },
     parseResponse: function (responseText) {
         var selectedValues, preSelectedValues, that;

@@ -33,10 +33,10 @@ FilterKit.Controls.Textfield = extend(Object, {
             input.addEventListener('keyup', function (e) {
                 if (e.which == 13) {
                     e.preventDefault();
-                    if (this.value != this.lastValue) {
+                    // if (this.value != this.lastValue) {
                         filters.addValue(this.name, this.value, options.operand, true);
                         that.onChange(this.value);
-                    }
+                    // }
                 } else if (options.realTime) {
                     if (this.value != this.lastValue) {
                         filters.addValue(this.name, this.value, options.operand, true);

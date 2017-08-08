@@ -1,7 +1,9 @@
 var FilterKit = {
     EXACT_MATCH: 2,
     resolveElement: function (el, multi) {
-        if (typeof el == 'string') {
+        if (!el) {
+            return null
+        } else if (typeof el == 'string') {
             return multi ? document.querySelectorAll(el) : document.querySelector(el);
         } else if (!(el instanceof Element)) { // Probably jQuery
             return !multi && el.length ? el[0] : el;

@@ -5,7 +5,8 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
         realTime: false,
         collectionType: 'dom',
         baseUrl: '/',
-        initialCollect: true
+        initialCollect: true,
+        onFilter: null
     });
 
     filters = new FilterKit.Filters();
@@ -25,6 +26,10 @@ FilterKit.Util.Searchbar = function (searchbarEl, collectionEl, options) {
     }
 
     collectionView = new FilterKit.CollectionViews.Div(collectionEl, collection, { template: options.template || null });
+
+    if (options.onFilter) {
+        collectionView.on('updateResults', options.onFilter);
+    }
 
     return filters;
 };

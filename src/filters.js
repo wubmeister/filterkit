@@ -31,10 +31,13 @@ FilterKit.Value = extend(Object, {
         return match;
     },
     serializeQuery: function (name) {
-        var key, queryParts = [];
+        var key, queryParts = [], part;
 
         for (key in this.conditions) {
-            queryParts.push(this.conditions[key].serializeQuery(name));
+            part = this.conditions[key].serializeQuery(name);
+            if (part && part != '') {
+                queryParts.push(part);
+            }
         }
 
         return queryParts.join('&');
@@ -48,6 +51,8 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         this.keyLabels = {};
         this.valueLabels = {};
         this.isBatching = false;
+        this.filterCount = 0;
+        this.eventsCancelled = false;
     },
     getHash: function (key, value) {
         return key + '_' + value;
@@ -72,7 +77,7 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         return match;
     },
     addValue: function (name, value, operand, replace) {
-        var tag, key;
+        var tag, key, isNew = !(name in this.filters);
 
         operand = operand || 'eq';
 
@@ -82,6 +87,7 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
             this.filterTags[name] = {};
         }
         this.filters[name].addCondition(operand, value);
+
         tag = {
             key: name,
             value: value,
@@ -100,10 +106,18 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
             tag.valueLabel = this.filters[name].conditions.geo.searchString;
         }
         this.filterTags[name][tag.hash] = tag;
-        this.dispatch('addtag', tag);
+
+        if ((!replace || isNew) && value && value != '') this.filterCount++;
+        else if (replace && !isNew && (!value || value == '')) this.filterCount--;
+
+        if (!this.eventsCancelled) {
+            this.dispatch('addtag', tag);
+        }
 
         if (!this.isBatching) {
-            this.dispatch('change');
+            if (!this.eventsCancelled) {
+                this.dispatch('change');
+            }
         } else {
             this.batchChanges++;
         }
@@ -115,14 +129,17 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
 
         if (name in this.filters) {
             this.filters[name].removeCondition(operand, value);
+            this.filterCount--;
             hash = this.getHash(name, value);
-            if (hash in this.filterTags[name]) {
+            if (!this.eventsCancelled && (hash in this.filterTags[name])) {
                 this.dispatch('removetag', this.filterTags[name][hash]);
             }
         }
 
         if (!this.isBatching) {
-            this.dispatch('change');
+            if (!this.eventsCancelled) {
+                this.dispatch('change');
+            }
         } else {
             this.batchChanges++;
         }
@@ -131,8 +148,10 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         var hash;
 
         if (name in this.filterTags) {
-            for (hash in this.filterTags[name]) {
-                this.dispatch('removetag', this.filterTags[name][hash]);
+            if (!this.eventsCancelled) {
+                for (hash in this.filterTags[name]) {
+                    this.dispatch('removetag', this.filterTags[name][hash]);
+                }
             }
             delete this.filterTags[name];
         }
@@ -147,27 +166,37 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
             this.clearValue(name);
         }
 
+        this.filterCount = 0;
+
         if (!this.isBatching) {
-            this.dispatch('change');
+            if (!this.eventsCancelled) {
+                this.dispatch('change');
+            }
         } else {
             this.batchChanges++;
         }
     },
-    serializeQuery: function () {
-        var key, queryParts = [];
+    serializeQuery: function (clearKey) {
+        var key, queryParts = [], result;
 
         for (key in this.filters) {
             queryParts.push(this.filters[key].serializeQuery(key));
         }
 
-        return queryParts.join('&');
+        result = queryParts.join('&');
+
+        if (result == '' && clearKey) {
+            return clearKey + '=';
+        }
+
+        return result;
     },
     startBatch: function () {
         this.batchChanges = 0;
         this.isBatching = true;
     },
     endBatch: function () {
-        if (this.isBatching && this.batchChanges > 0) {
+        if (!this.eventsCancelled && this.isBatching && this.batchChanges > 0) {
             this.dispatch('change');
         }
         this.isBatching = false;
@@ -216,5 +245,8 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
                 }
             }
         }
+    },
+    cancelEvents: function (cancel) {
+        this.eventsCancelled = (typeof cancel == 'undefined') ? true : cancel;
     }
 });

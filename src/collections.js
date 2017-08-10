@@ -180,7 +180,8 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
         this.items = [];
         this.options = FilterKit.resolveOptions(options, {
             baseUrl: location.pathname,
-            initialCollect: true
+            initialCollect: true,
+            clearKey: null
         });
         this.setFilters(filters);
         if (options.initialCollect) {
@@ -196,6 +197,7 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
 
         result = JSON.parse(responseText);
         this.items = (result instanceof Array) ? result : result.items;
+        this.pages = (result instanceof Array) ? null : result.pages;
         forEach(this.items, function (item) {
             var index;
 
@@ -207,7 +209,7 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
             }
         });
 
-        this.dispatch('update', this.items);
+        this.dispatch('update', this.items, this.pages);
 
         forEach(this.items, function (item) {
             if (item.isExactMatch) {
@@ -250,7 +252,7 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
     update: function () {
         var query, url;
 
-        query = this.filters.serializeQuery();
+        query = this.filters.serializeQuery(this.options.clearKey);
         url = this.options.baseUrl + (query ? '?' + query : '');
 
         this.fetchItems(url);

@@ -47,7 +47,7 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
             }
         });
     },
-    onUpdate: function (result) {
+    onUpdate: function (result, pages) {
         var i, html, numVisible, div;
 
         numVisible = 0;
@@ -102,6 +102,8 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
         if (this.addItemEl && this.term) {
             this.container.appendChild(this.addItemEl);
         }
+
+        this.dispatch('updateResults', result, pages);
     },
     onSelect: function (item, replace) {
         switch (this.options.showSelected) {

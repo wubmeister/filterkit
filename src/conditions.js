@@ -2,6 +2,7 @@
 
 FilterKit.Conditions.Base = extend(Object, {
     init: function (initValue) {
+        this.value = [];
         this.addValue(initValue || '');
     },
     addValue: function (value) {

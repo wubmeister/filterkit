@@ -17,8 +17,8 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
         if (templateEl) {
             this.template = templatify(templateEl.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>'));
             templateEl.parentElement.removeChild(templateEl);
-        } else if (options.template) {
-            this.template = templatify(options.template);
+        } else if (this.options.template) {
+            this.template = templatify(this.options.template);
         } else {
             this.template = templatify('<div class="item"><%= label %></div>');
         }
@@ -43,7 +43,7 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
             if (this == view.addItemEl) {
                 view.dispatch('addItem', view.term);
             } else if (this.hasAttribute('data-value')) {
-                collection.selectItem(this.getAttribute('data-value'), !options.multiple);
+                collection.selectItem(this.getAttribute('data-value'), !view.options.multiple);
             }
         });
     },

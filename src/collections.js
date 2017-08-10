@@ -181,7 +181,8 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
         this.options = FilterKit.resolveOptions(options, {
             baseUrl: location.pathname,
             initialCollect: true,
-            clearKey: null
+            clearKey: null,
+            htmlKey: 'html'
         });
         this.setFilters(filters);
         if (options.initialCollect) {
@@ -189,13 +190,16 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
         }
     },
     parseResponse: function (responseText) {
+        this.parseResponseJSON(responseText);
+    },
+    parseResponseJSON: function (responseText) {
         var selectedValues, preSelectedValues, that;
 
         that = this;
         selectedValues = this.selectedValues || [];
         preSelectedValues = this.preSelectedValues || [];
 
-        result = JSON.parse(responseText);
+        result = (typeof responseText == 'object') ? responseText : JSON.parse(responseText);
         this.items = (result instanceof Array) ? result : result.items;
         this.pages = (result instanceof Array) ? null : result.pages;
         forEach(this.items, function (item) {
@@ -244,6 +248,7 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
                 }
             };
             xhr.open('get', url, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.send();
         } else {
             this.queueUrl = url;
@@ -260,6 +265,41 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
 });
 FilterKit.Collections.AjaxHTML = extend(FilterKit.Collections.AjaxJSON, {
     parseResponse: function (responseText) {
-        this.dispatch('update', responseText);
+        var response;
+
+        if (responseText[0] == '{') {
+            response = JSON.parse(responseText);
+
+            if (response && (this.options.htmlKey in response)) {
+                this.dispatch('update', response[this.options.htmlKey]);
+            } else {
+                response = null;
+            }
+        }
+
+        if (!response) {
+            this.dispatch('update', responseText);
+        }
+    }
+});
+FilterKit.Collections.AjaxAutoselect = extend(FilterKit.Collections.AjaxJSON, {
+    parseResponse: function (responseText) {
+        var response;
+
+        if (responseText[0] == '{') {
+            response = JSON.parse(responseText);
+
+            if (response) {
+                if (this.options.htmlKey && (this.options.htmlKey in response)) {
+                    this.dispatch('update', response[this.options.htmlKey]);
+                } else {
+                    this.parseResponseJSON(response);
+                }
+            }
+        }
+
+        if (!response) {
+            this.dispatch('update', responseText);
+        }
     }
 });

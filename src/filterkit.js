@@ -11,11 +11,27 @@ var FilterKit = {
 
         return multi ? [ el ] : el;
     },
-    resolveOptions: function (options, defaults) {
-        var key;
+    resolveOptions: function (options, defaults, element) {
+        var key, fixedKey, value, attr;
 
         options = options || {};
         defaults = defaults || {};
+
+        if (element) {
+            for (key in element.attributes) {
+                attr = element.attributes[key];
+                if (attr.name && attr.name.substr(0, 5) == 'data-') {
+                    key = attr.name.substr(5).replace(/-([a-z0-9])/g, function (p, m1) { return m1.toUpperCase(); });
+                    if (key in defaults) {
+                        value = attr.value;
+                        if (value == 'true' || value == 'false') {
+                            value = value == 'true';
+                        }
+                        options[key] = value;
+                    }
+                }
+            }
+        }
 
         for (key in defaults) {
             if (!(key in options)) {

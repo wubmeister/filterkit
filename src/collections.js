@@ -134,7 +134,7 @@ FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
         this.container = FilterKit.resolveElement(el);
         this.options = FilterKit.resolveOptions(options, {
             itemSelector: '.item'
-        });
+        }, this.container);
         this.collectItems();
         this.setFilters(filters);
     },
@@ -207,6 +207,7 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
 
             item.isFiltered = true;
             item.isSelected = (selectedValues.indexOf(item.value) > -1);
+
             if ((index = preSelectedValues.indexOf(item.value)) > -1) {
                 preSelectedValues.splice(index, 1);
                 that.selectItem(item);

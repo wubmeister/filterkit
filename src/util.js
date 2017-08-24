@@ -38,7 +38,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     var dropdown, input, valueLabel, itemContainer, valueInput, listOutput,
         filters, searchInput, collection, collectionView, outputs,
         collapseTimeout, hlIndex, chips, list, isFocused, values, wrapper,
-        wrapperPadding, display, contentPanel;
+        wrapperPadding, display, contentPanel, extraPanel;
 
     dropdown = FilterKit.resolveElement(el);
 
@@ -48,12 +48,13 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         inputName: 'search',
         fieldName: null,
         blockHtml: null,
-        list: null
-    });
+        list: null,
+        baseUrl: location.toString()
+    }, dropdown);
 
     // Get values
     (function(){
-        var inputs = _('input,select', dropdown);
+        var inputs = _(dropdown).children('input,select');
 
         values = [];
         inputs.each(function () {
@@ -76,6 +77,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                 }
             }
         });
+
         inputs.remove();
     })();
 
@@ -154,17 +156,17 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         contentPanel = FilterKit.createElement('div.contentpanel');
         dropdown.appendChild(contentPanel);
 
-        panel = dropdown.querySelector('.panel');
+        extraPanel = dropdown.querySelector('.panel');
 
         if (itemContainer) {
             contentPanel.appendChild(itemContainer);
         }
-        if (panel) {
-            contentPanel.appendChild(panel);
+        if (extraPanel) {
+            contentPanel.appendChild(extraPanel);
         }
 
         ddIcon = dropdown.querySelector('.dropdown.icon');
-        if (!ddIcon) {
+        if (!ddIcon || ddIcon.parentElement != dropdown) {
             ddIcon = FilterKit.createElement('i.dropdown.icon');
         }
         display.appendChild(ddIcon);
@@ -202,6 +204,9 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     filters = new FilterKit.Filters();
     searchInput = new FilterKit.Controls.Textfield(input, filters, { keyboardNavigation: true, realTime: true, filledClass: 'filled' });
+    if (extraPanel) {
+        new FilterKit.Controls.Container(extraPanel, filters);
+    }
 
     switch (options.collectionType) {
         case 'ajax_json':
@@ -213,7 +218,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
             break;
 
         default:
-            collection = new FilterKit.Collections.DOM(collectionEl, filters, options);
+            collection = new FilterKit.Collections.DOM(itemContainer, filters, options);
             break;
     }
 
@@ -230,7 +235,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
             list = new FilterKit.SelectOutput.Blocks(listOutput);
             outputs.push(list);
             if (options.blockHtml) {
-                list.blockHtml = options.blockHtml;
+                list.blockHtml = (typeof options.blockHtml == 'string') ? templatify(options.blockHtml) : options.blockHtml;
             }
         }
     } else {
@@ -367,6 +372,26 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     input.addEventListener('blur', function () {
         delayToCollapse();
+    });
+
+    _('.panel input, .panel select', dropdown).on('focus', function (e) {
+        if (collapseTimeout) {
+            clearTimeout(collapseTimeout);
+            collapseTimeout = null;
+        }
+    });
+
+    window.addEventListener('click', function (e) {
+        var el, activeDropdown;
+
+        el = e.target;
+        while (el && !el.classList.contains('fk-dropdown')) {
+            el = el.parentElement;
+        }
+
+        if (!el) {
+            delayToCollapse();
+        }
     });
 
     filters.on('exactMatch', function (item) {

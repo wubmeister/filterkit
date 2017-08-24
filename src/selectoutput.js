@@ -3,11 +3,11 @@ FilterKit.SelectOutput.Chips = extend(UtilEventDispatcher, {
     init: function (el, options) {
         var output = this;
 
+        this.container = FilterKit.resolveElement(el);
         this.options = FilterKit.resolveOptions(options, {
             name: null,
             addHiddenInput: false
-        });
-        this.container = FilterKit.resolveElement(el);
+        }, this.container);
 
         _(this.container).delegate('click', '.close.icon', function () {
             output.removeChip(this.parentElement);

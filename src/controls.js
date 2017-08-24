@@ -15,7 +15,7 @@ FilterKit.Controls.Textfield = extend(Object, {
             keyboardNavigation: false,
             operand: 'like',
             filledClass: null
-        });
+        }, input);
 
         if (input) {
             if (!input.name) {
@@ -239,16 +239,16 @@ FilterKit.Controls.Container = extend(Object, {
     init: function (el, filters, options) {
         var container, radioButtons, checkboxes, inputs, selects;
 
-        options = FilterKit.resolveOptions(options, {
-            realTime: false,
-            textFieldOperand: 'like'
-        });
-
         function onInputChange(e) {
             filters.addValue(this.name, this.value, 'eq', true);
         }
 
         container = FilterKit.resolveElement(el);
+
+        options = FilterKit.resolveOptions(options, {
+            realTime: false,
+            textFieldOperand: 'like'
+        }, container);
 
         new FilterKit.Controls.Checkboxes(container, filters);
         new FilterKit.Controls.RadioButtons(container, filters);

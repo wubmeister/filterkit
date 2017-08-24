@@ -11,7 +11,7 @@ FilterKit.CollectionViews.Div = extend(UtilEventDispatcher, {
             maxVisible: 0,
             multiple: false,
             template: null
-        });
+        }, this.container);
 
         templateEl = this.container.querySelector('.itemtemplate');
         if (templateEl) {

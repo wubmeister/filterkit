@@ -1,9 +1,11 @@
 #!/bin/bash
 
-uglifyjs src/prereq.js src/filterkit.js src/conditions.js src/filters.js src/collections.js src/collectionviews.js src/controls.js src/selectoutput.js src/util.js src/jquery.js -o filterkit.min.js --source-map filterkit.min.js.map
+CURRDIR=`dirname $0`
 
-mv filterkit.min.js dist/
-mv filterkit.min.js.map dist/
+uglifyjs $CURRDIR/src/prereq.js $CURRDIR/src/filterkit.js $CURRDIR/src/conditions.js $CURRDIR/src/filters.js $CURRDIR/src/collections.js $CURRDIR/src/collectionviews.js $CURRDIR/src/controls.js $CURRDIR/src/selectoutput.js $CURRDIR/src/util.js $CURRDIR/src/jquery.js -o filterkit.min.js --source-map filterkit.min.js.map
 
-echo "" > dist/filterkit.css
-find src/css -iname *.css -exec cat {} >> dist/filterkit.css \;
+mv filterkit.min.js $CURRDIR/dist/
+mv filterkit.min.js.map $CURRDIR/dist/
+
+echo "" > $CURRDIR/dist/filterkit.css
+find $CURRDIR/src/css -iname '*.css' -exec cat {} >> $CURRDIR/dist/filterkit.css \;

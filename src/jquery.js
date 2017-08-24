@@ -16,7 +16,7 @@ if ('$' in window) {
                     addResult: 'Add <strong>{term}</strong>',
                     noResults: 'No results found'
                 }
-            });
+            }, this);
 
             if (this.nodeName == 'SELECT') {
                 $dd = $('<div class="fk-dropdown"></div>').prependTo(this).append(this);

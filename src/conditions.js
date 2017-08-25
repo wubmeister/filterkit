@@ -1,9 +1,10 @@
 // Filter conditions
 
 FilterKit.Conditions.Base = extend(Object, {
-    init: function (initValue) {
+    init: function (initValue, filterValue) {
         this.value = [];
         this.addValue(initValue || '');
+        this.filterValue = filterValue;
     },
     addValue: function (value) {
         if (this.value instanceof Array) {
@@ -19,6 +20,17 @@ FilterKit.Conditions.Base = extend(Object, {
                 this.value = [ this.value, value ];
             }
         }
+
+        this.filterValue.addTag(value);
+    },
+    replaceValue: function (value) {
+        if (value instanceof Array) {
+            this.value = [this.value].concat(value);
+        } else {
+            this.value = [ this.value, value ];
+        }
+
+        this.filterValue.replaceTag(value);
     },
     removeValue: function (value) {
         var index;
@@ -35,6 +47,8 @@ FilterKit.Conditions.Base = extend(Object, {
         } else if (this.value == value) {
             this.value = null;
         }
+
+        this.filterValue.removeTag(value);
     },
     hasValues: function (value) {
         return this.value !== null && (!(this.value instanceof Array) || this.value.length > 0);
@@ -153,8 +167,9 @@ FilterKit.Conditions.Gte = extend(FilterKit.Conditions.Base, {
 });
 
 FilterKit.Conditions.Geo = extend(FilterKit.Conditions.Base, {
-    init: function (initValue) {
+    init: function (initValue, filterValue) {
         this.addValue(initValue);
+        this.filterValue = filterValue;
     },
     addValue: function (value) {
         var values;

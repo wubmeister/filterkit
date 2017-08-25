@@ -1,10 +1,16 @@
 FilterKit.Value = extend(Object, {
-    init: function() {
+    init: function(name, filters) {
         this.conditions = {};
+        this.name = name;
+        this.filters = filters;
     },
-    addCondition: function (operand, value) {
+    addCondition: function (operand, value, replace) {
         if (operand in this.conditions) {
-            this.conditions[operand].addValue(value);
+            if (replace) {
+                this.conditions[operand].replaceValue(value);
+            } else {
+                this.conditions[operand].addValue(value);
+            }
         } else {
             cls = operand ? operand[0].toUpperCase() + operand.substr(1) : 'Eq';
             this.conditions[operand] = new FilterKit.Conditions[cls](value);
@@ -30,17 +36,26 @@ FilterKit.Value = extend(Object, {
 
         return match;
     },
-    serializeQuery: function (name) {
+    serializeQuery: function () {
         var key, queryParts = [], part;
 
         for (key in this.conditions) {
-            part = this.conditions[key].serializeQuery(name);
+            part = this.conditions[key].serializeQuery(this.name);
             if (part && part != '') {
                 queryParts.push(part);
             }
         }
 
         return queryParts.join('&');
+    },
+    addTag: function (value) {
+        this.filters.addTag(this.name, value);
+    },
+    replaceTag: function (value) {
+        this.filters.replaceTag(this.name, value);
+    },
+    removeTag: function (value) {
+        this.filters.removeTag(this.name, value);
     }
 });
 
@@ -53,6 +68,7 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         this.isBatching = false;
         this.filterCount = 0;
         this.eventsCancelled = false;
+        this.filterOptions = {};
     },
     getHash: function (key, value) {
         return key + '_' + value;
@@ -77,44 +93,40 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         return match;
     },
     addValue: function (name, value, operand, replace) {
-        var tag, key, origFilterCount, isNew = !(name in this.filters);
+        var tag, key;
 
         operand = operand || 'eq';
-        origFilterCount = this.filterCount;
 
-        if (!(name in this.filters) || replace) {
+        if (!(name in this.filters)) {
             this.clearValue(name);
-            this.filters[name] = new FilterKit.Value();
-            this.filterTags[name] = {};
+            this.filters[name] = new FilterKit.Value(name, this);
+            // this.filterTags[name] = {};
         }
-        this.filters[name].addCondition(operand, value);
+        this.filters[name].addCondition(operand, value, replace);
 
-        tag = {
-            key: name,
-            value: value,
-            keyLabel: name,
-            valueLabel: value,
-            operand: operand,
-            hash: this.getHash(name, value)
-        };
-        if (name in this.keyLabels) {
-            tag.keyLabel = this.keyLabels[name];
-        }
-        if (tag.hash in this.valueLabels) {
-            tag.valueLabel = this.valueLabels[tag.hash];
-        }
-        if (operand == 'geo' && this.filters[name].conditions.geo.searchString) {
-            tag.valueLabel = this.filters[name].conditions.geo.searchString;
-        }
-        this.filterTags[name][tag.hash] = tag;
+        // tag = {
+        //     key: name,
+        //     value: value,
+        //     keyLabel: name,
+        //     valueLabel: value,
+        //     operand: operand,
+        //     hash: this.getHash(name, value)
+        // };
+        // if (name in this.keyLabels) {
+        //     tag.keyLabel = this.keyLabels[name];
+        // }
+        // if (tag.hash in this.valueLabels) {
+        //     tag.valueLabel = this.valueLabels[tag.hash];
+        // }
+        // if (operand == 'geo' && this.filters[name].conditions.geo.searchString) {
+        //     tag.valueLabel = this.filters[name].conditions.geo.searchString;
+        // }
+        // this.filterTags[name][tag.hash] = tag;
 
-        if ((!replace || isNew) && value && value != '') this.filterCount++;
-        else if (replace && !isNew && (!value || value == '')) this.filterCount--;
+        // if ((!replace || isNew) && value && value != '') this.filterCount++;
+        // else if (replace && !isNew && (!value || value == '')) this.filterCount--;
 
         // if (this.filterCount != origFilterCount) {
-            if (!this.eventsCancelled) {
-                this.dispatch('addtag', tag);
-            }
 
             if (!this.isBatching) {
                 if (!this.eventsCancelled) {
@@ -179,11 +191,75 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
             this.batchChanges++;
         }
     },
+    createTag: function (name, value) {
+        tag = {
+            key: name,
+            value: value,
+            keyLabel: name,
+            valueLabel: value,
+            operand: operand,
+            hash: this.getHash(name, value)
+        };
+        if (name in this.keyLabels) {
+            tag.keyLabel = this.keyLabels[name];
+        }
+        if (tag.hash in this.valueLabels) {
+            tag.valueLabel = this.valueLabels[tag.hash];
+        }
+        if (operand == 'geo' && this.filters[name].conditions.geo.searchString) {
+            tag.valueLabel = this.filters[name].conditions.geo.searchString;
+        }
+
+        return tag;
+    },
+    addTag: function (name, value) {
+        var tag = this.createTag(name, value);
+
+        if (!(name in this.filterTags)) {
+            this.filterTags[name] = {};
+        }
+
+        this.filterCount++;
+
+        this.filterTags[name][tag.hash] = tag;
+        if (!this.eventsCancelled) {
+            this.dispatch('addtag', tag);
+        }
+    },
+    replaceTag: function (name, value) {
+        var that = this,
+            tag = this.createTag(name, value);
+
+        if ((name in this.filterTags) && !this.eventsCancelled) {
+            forEach(this.filterTags, function (tag) {
+                that.dispatch('removetag', tag);
+            });
+        }
+
+        this.filterTags[name] = {};
+        this.filterTags[name][tag.hash] = tag;
+
+        if (!this.eventsCancelled) {
+            this.dispatch('addtag', tag);
+        }
+    },
+    removeTag: function (name, value) {
+        var hash = this.getHash(name, value);
+
+        this.filterCount--;
+
+        if ((name in this.filterTags) && (hash in this.filterTags[name])) {
+            if (!this.eventsCancelled) {
+                that.dispatch('removetag', this.filterTags[name][hash]);
+            }
+            delete this.filterTags[name][hash];
+        }
+    },
     serializeQuery: function (clearKey) {
         var key, queryParts = [], result;
 
         for (key in this.filters) {
-            queryParts.push(this.filters[key].serializeQuery(key));
+            queryParts.push(this.filters[key].serializeQuery());
         }
 
         result = queryParts.join('&');
@@ -251,5 +327,15 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
     },
     cancelEvents: function (cancel) {
         this.eventsCancelled = (typeof cancel == 'undefined') ? true : cancel;
+    },
+    setOptions: function (options) {
+        var key;
+
+        for (key in options) {
+            this.filterOptions[key] = options[key];
+            this.dispatch('options:' + key, options[key]);
+        }
+
+        this.dispatch('options', this.filterOptions);
     }
 });

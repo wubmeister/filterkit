@@ -6,7 +6,7 @@ const NAVKEY_RETURN = 13;
 
 FilterKit.Controls.Textfield = extend(Object, {
     init: function (el, filters, options) {
-        var that = this;
+        var that = this, handlingInput = false;
 
         input = FilterKit.resolveElement(el);
 
@@ -22,6 +22,7 @@ FilterKit.Controls.Textfield = extend(Object, {
                 input.name = FilterKit.getUid('textfield');
             }
             input.addEventListener('keydown', function (e) {
+                handlingInput = true;
                 if (e.which == 13) {
                     e.preventDefault();
                 } else if (options.keyboardNavigation && (e.which == NAVKEY_UPARROW || e.which == NAVKEY_DOWNARROW)) {
@@ -29,8 +30,10 @@ FilterKit.Controls.Textfield = extend(Object, {
                     that.onNavigationKey(e.which);
                 }
                 this.lastValue = this.value;
+                handlingInput = false;
             });
             input.addEventListener('keyup', function (e) {
+                handlingInput = true;
                 if (e.which == 13) {
                     e.preventDefault();
                     // if (this.value != this.lastValue) {
@@ -56,18 +59,21 @@ FilterKit.Controls.Textfield = extend(Object, {
                         that.onNavigationKey(e.which);
                     }
                 }
+                handlingInput = false;
             });
 
             filters.on('addtag', function (tag) {
-                console.log('add tag', tag.key, input.name);
-                if (tag.key == input.name) {
-                    input.value = tag.value;
+                if (!handlingInput) {
+                    if (tag.key == input.name) {
+                        input.value = tag.value;
+                    }
                 }
             });
             filters.on('removetag', function (tag) {
-                console.log('remove tag', tag.key, input.name);
-                if (tag.key == input.name) {
-                    input.value = '';
+                if (!handlingInput) {
+                    if (tag.key == input.name) {
+                        input.value = '';
+                    }
                 }
             });
 

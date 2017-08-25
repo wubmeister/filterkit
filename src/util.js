@@ -58,7 +58,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
         values = [];
         inputs.each(function () {
-            var i;
+            var i, value;
 
             if (this.nodeName == 'SELECT') {
                 for (i = 0; i < this.options.length; i++) {
@@ -67,10 +67,14 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
                     }
                 }
             } else if (this.value) {
+                value = this.value;
+                if (this.hasAttribute('data-item')) {
+                    value = JSON.parse(atob(this.getAttribute('data-item')));
+                }
                 if (this.name.substr(-2) == '[]') {
-                    values.push(this.value);
+                    values.push(value);
                 } else {
-                    values = [ this.value ];
+                    values = [ value ];
                 }
                 if (!options.fieldName) {
                     options.fieldName = this.name;
@@ -208,6 +212,10 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         new FilterKit.Controls.Container(extraPanel, filters);
     }
 
+    if (itemContainer.querySelector('.item')) {
+        options.initialCollect = false;
+    }
+
     switch (options.collectionType) {
         case 'ajax_json':
             collection = new FilterKit.Collections.AjaxJSON(filters, options);
@@ -292,10 +300,12 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     }
 
     function clearInput() {
-        input.value = '';
-        input.classList.remove('filled');
-        collectionView.setTerm('');
-        filters.addValue(input.name, '', 'like', true);
+        if (input.value != '') {
+            input.value = '';
+            input.classList.remove('filled');
+            collectionView.setTerm('');
+            filters.addValue(input.name, '', 'like', true);
+        }
     }
 
     function updateWrapperHeight() {
@@ -307,7 +317,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
             vpHeight = window.innerHeight || document.documentElement.offsetHeight,
             offset = _(wrapper).offset();
 
-        if (offset.top + wrapper.offsetHeight + contentPanel.offsetHeight > scrollTop + vpHeight && offset.top - contentPanel.offsetHeight > scrollTop) {
+        if (offset.top + wrapper.offsetHeight + 200 > scrollTop + vpHeight && offset.top - 200 > scrollTop) {
             dropdown.classList.add('reverse');
         } else {
             dropdown.classList.remove('reverse');

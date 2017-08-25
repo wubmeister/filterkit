@@ -60,7 +60,6 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
         }
 
         if (typeof value == 'object') {
-            if (this.items.indexOf(value) > -1) {
                 if (replace) {
                     for (i = 0; i < this.items.length; i++) {
                         this.items[i].isSelected = false;
@@ -69,9 +68,9 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
                 value.isSelected = true;
                 this.selectedValues.push(value.value);
                 this.dispatch('selectItem', value, replace);
-            } else {
-                this.preSelectedValues.push(value.value);
-            }
+            // } if (this.items.indexOf(value) > -1) {
+            //     this.preSelectedValues.push(value.value);
+            // }
         } else {
             for (i = 0; i < this.items.length; i++) {
                 if (this.items[i].value == value) {

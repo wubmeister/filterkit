@@ -77,9 +77,10 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         return match;
     },
     addValue: function (name, value, operand, replace) {
-        var tag, key, isNew = !(name in this.filters);
+        var tag, key, origFilterCount, isNew = !(name in this.filters);
 
         operand = operand || 'eq';
+        origFilterCount = this.filterCount;
 
         if (!(name in this.filters) || replace) {
             this.clearValue(name);
@@ -110,17 +111,19 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         if ((!replace || isNew) && value && value != '') this.filterCount++;
         else if (replace && !isNew && (!value || value == '')) this.filterCount--;
 
-        if (!this.eventsCancelled) {
-            this.dispatch('addtag', tag);
-        }
-
-        if (!this.isBatching) {
+        // if (this.filterCount != origFilterCount) {
             if (!this.eventsCancelled) {
-                this.dispatch('change');
+                this.dispatch('addtag', tag);
             }
-        } else {
-            this.batchChanges++;
-        }
+
+            if (!this.isBatching) {
+                if (!this.eventsCancelled) {
+                    this.dispatch('change');
+                }
+            } else {
+                this.batchChanges++;
+            }
+        // }
     },
     removeValue: function (name, value, operand) {
         var hash;

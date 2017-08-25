@@ -62,7 +62,6 @@
             event = document.createEvent(className);
             initName = 'init' + className;
             event[initName](event, true, true, window, null, 0, 0, 0, 0, false, false, false, false, 0, null);
-            console.log('createEvent');
         } else {
             event = new window[className]('click');
         }

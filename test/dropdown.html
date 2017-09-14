@@ -46,7 +46,9 @@
         <!-- <input name="values[]" value="2" />
         <input name="values[]" value="4" /> -->
         <div class="items">
-
+            <div class="item" data-value="1">Peter Atkins</div>
+            <div class="item" data-value="2">Emma Gay</div>
+            <div class="item" data-value="3">Grace Sheppard</div>
         </div>
     </div>
 
@@ -83,9 +85,7 @@ $('#sel_dropdown').fkDropdown({
     placeholder: 'Select a value',
     list: $('.list'),
     fieldName: 'dingen[]',
-    blockHtml: function (item) {
-        return item.label + '<br/>' + item.firstname + ' ' + item.infix + ' ' + item.lastname;
-    },
+    blockHtml: '<%= label %><br/><%= firstname %> <%= infix %> <%= lastname %><br/><%= company %>',
     onAdd: function (text) {
         return new Promise(function (resolve, reject) {
             setTimeout(function () {

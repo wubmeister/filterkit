@@ -125,23 +125,18 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
             this.items.unshift(item);
             this.dispatch('update', this.items);
         }
-    }
-});
-FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
-    init: function (el, filters, options) {
-        this.items = [];
-        this.container = FilterKit.resolveElement(el);
-        this.options = FilterKit.resolveOptions(options, {
-            itemSelector: '.item'
-        }, this.container);
-        this.collectItems();
-        this.setFilters(filters);
     },
     collectItems: function () {
         var elements, callback, that, uid;
 
         function elementToItem(el) {
-            var item = { value: el.getAttribute('data-value') || uid+'', label: el.textContent.replace(/^\s+|\s+$/g, '') };
+            var item;
+
+            if (el.hasAttribute('data-item')) {
+                item = JSON.parse(atob(el.getAttribute('data-item')));
+            } else {
+                item = { value: el.getAttribute('data-value') || uid+'', label: el.textContent.replace(/^\s+|\s+$/g, '') };
+            }
             if (item.value == uid) {
                 uid++;
                 el.setAttribute('data-value', item.value);
@@ -158,11 +153,26 @@ FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
         this.items = [];
 
         forEach(elements, function (el) {
-            var item = callback(el);
-            item.element = el;
-            item.isFiltered = true;
-            that.items.push(item);
+            var item;
+
+            if (!el.parentElement.classList.contains('itemtemplate')) {
+                item = callback(el);
+                item.element = el;
+                item.isFiltered = true;
+                that.items.push(item);
+            }
         });
+    }
+});
+FilterKit.Collections.DOM = extend(FilterKit.Collections.Base, {
+    init: function (el, filters, options) {
+        this.items = [];
+        this.container = FilterKit.resolveElement(el);
+        this.options = FilterKit.resolveOptions(options, {
+            itemSelector: '.item'
+        }, this.container);
+        this.collectItems();
+        this.setFilters(filters);
     }
 });
 FilterKit.Collections.Array = extend(FilterKit.Collections.Base, {
@@ -181,8 +191,14 @@ FilterKit.Collections.AjaxJSON = extend(FilterKit.Collections.Base, {
             baseUrl: location.pathname,
             initialCollect: true,
             clearKey: null,
-            htmlKey: 'html'
+            htmlKey: 'html',
+            initialDomCollection: null,
+            itemSelector: '.item'
         });
+        if (options.initialDomCollection) {
+            this.container = FilterKit.resolveElement(options.initialDomCollection);
+            this.collectItems();
+        }
         this.setFilters(filters);
         if (options.initialCollect) {
             this.fetchItems(this.options.baseUrl);

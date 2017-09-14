@@ -218,10 +218,12 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
 
     switch (options.collectionType) {
         case 'ajax_json':
+            options.initialDomCollection = itemContainer;
             collection = new FilterKit.Collections.AjaxJSON(filters, options);
             break;
 
         case 'ajax_html':
+            options.initialDomCollection = itemContainer;
             collection = new FilterKit.Collections.AjaxHTML(filters, options);
             break;
 

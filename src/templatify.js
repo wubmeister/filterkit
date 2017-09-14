@@ -35,7 +35,7 @@ function templatify(template, open, close) {
         });
 
         if (tpl[0] == '=' || tpl[0] == '-') {
-            js += 't+=(' + (tpl[0] == '-' ? htmlSpecialChars(tpl.substr(1)) : tpl.substr(1)) + ');';
+            js += (js == '' ? 't=(' : 't+=(') + (tpl[0] == '-' ? htmlSpecialChars(tpl.substr(1)) : tpl.substr(1)) + ');';
         } else {
             js += tpl;
         }

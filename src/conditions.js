@@ -1,10 +1,11 @@
 // Filter conditions
 
 FilterKit.Conditions.Base = extend(Object, {
+    operand: 'base',
     init: function (initValue, filterValue) {
         this.value = [];
-        this.addValue(initValue || '');
         this.filterValue = filterValue;
+        this.addValue(initValue || '');
     },
     addValue: function (value) {
         if (this.value instanceof Array) {
@@ -21,7 +22,7 @@ FilterKit.Conditions.Base = extend(Object, {
             }
         }
 
-        this.filterValue.addTag(value);
+        this.filterValue.addTag(value, this.operand);
     },
     replaceValue: function (value) {
         if (value instanceof Array) {
@@ -30,7 +31,7 @@ FilterKit.Conditions.Base = extend(Object, {
             this.value = [ this.value, value ];
         }
 
-        this.filterValue.replaceTag(value);
+        this.filterValue.replaceTag(value, this.operand);
     },
     removeValue: function (value) {
         var index;
@@ -48,7 +49,7 @@ FilterKit.Conditions.Base = extend(Object, {
             this.value = null;
         }
 
-        this.filterValue.removeTag(value);
+        this.filterValue.removeTag(value, this.operand);
     },
     hasValues: function (value) {
         return this.value !== null && (!(this.value instanceof Array) || this.value.length > 0);
@@ -62,6 +63,7 @@ FilterKit.Conditions.Base = extend(Object, {
 });
 
 FilterKit.Conditions.Eq = extend(FilterKit.Conditions.Base, {
+    operand: 'eq',
     checkValue: function (value) {
         var result = false;
 
@@ -101,8 +103,14 @@ FilterKit.Conditions.Eq = extend(FilterKit.Conditions.Base, {
 });
 
 FilterKit.Conditions.Like = extend(FilterKit.Conditions.Base, {
+    operand: 'like',
     addValue: function (value) {
         this.value = value.toLowerCase();
+        this.filterValue.addTag(value, this.operand);
+    },
+    replaceValue: function (value) {
+        this.value = value.toLowerCase();
+        this.filterValue.replaceTag(value, this.operand);
     },
     checkValue: function (value) {
         value = (''+value).toLowerCase();
@@ -131,6 +139,7 @@ FilterKit.Conditions.Like = extend(FilterKit.Conditions.Base, {
 });
 
 FilterKit.Conditions.Lt = extend(FilterKit.Conditions.Base, {
+    operand: 'lt',
     checkValue: function (value) {
         return value < this.value;
     },
@@ -140,6 +149,7 @@ FilterKit.Conditions.Lt = extend(FilterKit.Conditions.Base, {
 });
 
 FilterKit.Conditions.Lte = extend(FilterKit.Conditions.Base, {
+    operand: 'lte',
     checkValue: function (value) {
         return value <= this.value;
     },
@@ -149,6 +159,7 @@ FilterKit.Conditions.Lte = extend(FilterKit.Conditions.Base, {
 });
 
 FilterKit.Conditions.Gt = extend(FilterKit.Conditions.Base, {
+    operand: 'gt',
     checkValue: function (value) {
         return value > this.value;
     },
@@ -158,6 +169,7 @@ FilterKit.Conditions.Gt = extend(FilterKit.Conditions.Base, {
 });
 
 FilterKit.Conditions.Gte = extend(FilterKit.Conditions.Base, {
+    operand: 'gte',
     checkValue: function (value) {
         return value >= this.value;
     },
@@ -167,6 +179,7 @@ FilterKit.Conditions.Gte = extend(FilterKit.Conditions.Base, {
 });
 
 FilterKit.Conditions.Geo = extend(FilterKit.Conditions.Base, {
+    operand: 'geo',
     init: function (initValue, filterValue) {
         this.addValue(initValue);
         this.filterValue = filterValue;

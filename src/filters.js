@@ -13,7 +13,7 @@ FilterKit.Value = extend(Object, {
             }
         } else {
             cls = operand ? operand[0].toUpperCase() + operand.substr(1) : 'Eq';
-            this.conditions[operand] = new FilterKit.Conditions[cls](value);
+            this.conditions[operand] = new FilterKit.Conditions[cls](value, this);
         }
     },
     removeCondition: function (operand, value) {
@@ -48,14 +48,14 @@ FilterKit.Value = extend(Object, {
 
         return queryParts.join('&');
     },
-    addTag: function (value) {
-        this.filters.addTag(this.name, value);
+    addTag: function (value, operand) {
+        this.filters.addTag(this.name, value, operand);
     },
-    replaceTag: function (value) {
-        this.filters.replaceTag(this.name, value);
+    replaceTag: function (value, operand) {
+        this.filters.replaceTag(this.name, value, operand);
     },
-    removeTag: function (value) {
-        this.filters.removeTag(this.name, value);
+    removeTag: function (value, operand) {
+        this.filters.removeTag(this.name, value, operand);
     }
 });
 
@@ -191,7 +191,7 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
             this.batchChanges++;
         }
     },
-    createTag: function (name, value) {
+    createTag: function (name, value, operand) {
         tag = {
             key: name,
             value: value,
@@ -212,8 +212,8 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
 
         return tag;
     },
-    addTag: function (name, value) {
-        var tag = this.createTag(name, value);
+    addTag: function (name, value, operand) {
+        var tag = this.createTag(name, value, operand);
 
         if (!(name in this.filterTags)) {
             this.filterTags[name] = {};
@@ -226,9 +226,9 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
             this.dispatch('addtag', tag);
         }
     },
-    replaceTag: function (name, value) {
+    replaceTag: function (name, value, operand) {
         var that = this,
-            tag = this.createTag(name, value);
+            tag = this.createTag(name, value, operand);
 
         if ((name in this.filterTags) && !this.eventsCancelled) {
             forEach(this.filterTags, function (tag) {

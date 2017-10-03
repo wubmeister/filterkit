@@ -14,7 +14,8 @@ FilterKit.Controls.Textfield = extend(Object, {
             realTime: false,
             keyboardNavigation: false,
             operand: 'like',
-            filledClass: null
+            filledClass: null,
+            updateTags: true
         }, input);
 
         if (input) {
@@ -37,12 +38,12 @@ FilterKit.Controls.Textfield = extend(Object, {
                 if (e.which == 13) {
                     e.preventDefault();
                     // if (this.value != this.lastValue) {
-                        filters.addValue(this.name, this.value, options.operand, true);
+                        filters.addValue(this.name, this.value, options.operand, true, !options.updateTags);
                         that.onChange(this.value);
                     // }
                 } else if (options.realTime) {
                     if (this.value != this.lastValue) {
-                        filters.addValue(this.name, this.value, options.operand, true);
+                        filters.addValue(this.name, this.value, options.operand, true, !options.updateTags);
                         that.onChange(this.value);
                     }
                 }
@@ -62,24 +63,26 @@ FilterKit.Controls.Textfield = extend(Object, {
                 handlingInput = false;
             });
 
-            filters.on('addtag', function (tag) {
-                if (!handlingInput) {
-                    if (tag.key == input.name) {
-                        input.value = tag.value;
+            if (options.updateTags) {
+                filters.on('addtag', function (tag) {
+                    if (!handlingInput) {
+                        if (tag.key == input.name) {
+                            input.value = tag.value;
+                        }
                     }
-                }
-            });
-            filters.on('removetag', function (tag) {
-                if (!handlingInput) {
-                    if (tag.key == input.name) {
-                        input.value = '';
+                });
+                filters.on('removetag', function (tag) {
+                    if (!handlingInput) {
+                        if (tag.key == input.name) {
+                            input.value = '';
+                        }
                     }
-                }
-            });
+                });
+            }
 
             if (input.value && input.value != '') {
                 filters.cancelEvents();
-                filters.addValue(input.name, input.value, options.operand, true);
+                filters.addValue(input.name, input.value, options.operand, true, !options.updateTags);
                 filters.cancelEvents(false);
             }
         }
@@ -91,14 +94,17 @@ FilterKit.Controls.Textfield = extend(Object, {
 });
 FilterKit.Controls.Checkboxes = extend(Object, {
     init: function (el, filters) {
-        var container, checkboxes;
+        var container, checkboxes, cancelEvents;
 
         function onCbChange(e) {
-            if (this.checked) {
-                filters.addValue(this.filterName, this.value);
-            } else {
-                filters.removeValue(this.filterName, this.value);
+            if (!cancelEvents) {
+                if (this.checked) {
+                    filters.addValue(this.filterName, this.value);
+                } else {
+                    filters.removeValue(this.filterName, this.value);
+                }
             }
+            cancelEvents = false;
         }
 
         container = FilterKit.resolveElement(el);
@@ -117,15 +123,20 @@ FilterKit.Controls.Checkboxes = extend(Object, {
 
             filters.on('addtag', function (tag) {
                 forEach(checkboxes, function (checkbox) {
-                    if (checkbox.name.filterName == tag.key && checkbox.value == tag.value) {
+                    if (checkbox.filterName == tag.key && checkbox.value == tag.value) {
                         checkbox.checked = true;
+                        cancelEvents = true;
+                        _(checkbox).trigger('change');
                     }
                 });
             });
+
             filters.on('removetag', function (tag) {
                 forEach(checkboxes, function (checkbox) {
-                    if (checkbox.name.filterName == tag.key && checkbox.value == tag.value) {
+                    if (checkbox.filterName == tag.key && checkbox.value == tag.value) {
                         checkbox.checked = false;
+                        cancelEvents = true;
+                        _(checkbox).trigger('change');
                     }
                 });
             });
@@ -164,6 +175,7 @@ FilterKit.Controls.RadioButtons = extend(Object, {
                     }
                 });
             });
+
             filters.on('removetag', function (tag) {
                 forEach(radioButtons, function (radio) {
                     if (radio.name.filterName == tag.key && radio.value == tag.value) {
@@ -226,6 +238,7 @@ FilterKit.Controls.Select = extend(Object, {
                     });
                 }
             });
+
             filters.on('removetag', function (tag) {
                 if (select.name == tag.key) {
                     forEach(select.options, function (option) {
@@ -246,7 +259,29 @@ FilterKit.Controls.Container = extend(Object, {
         var container, radioButtons, checkboxes, inputs, selects;
 
         function onInputChange(e) {
-            filters.addValue(this.name, this.value, 'eq', true);
+            var name, values, lastValues, oldValues, newValues;
+
+            name = this.name.replace(/\[\]$/, '')
+
+            if (/\[\]$/.test(this.name)) {
+                lastValues = this.lastValue ? this.lastValue.split(',') : [];
+                values = this.value.split(',');
+                oldValues = lastValues.filter(function (item) { return values.indexOf(item) == -1; });
+                newValues = values.filter(function (item) { return lastValues.indexOf(item) == -1; });
+
+                forEach (oldValues, function (value) {
+                    filters.removeValue(name, value, 'eq');
+                });
+                forEach (newValues, function (value) {
+                    if (value != '') {
+                        filters.addValue(name, value, 'eq');
+                    }
+                });
+            } else {
+                filters.addValue(name, this.value, 'eq', true);
+            }
+
+            this.lastValue = this.value;
         }
 
         container = FilterKit.resolveElement(el);

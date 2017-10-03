@@ -47,8 +47,10 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         collectionType: 'dom',
         inputName: 'search',
         fieldName: null,
+        chipHtml: null,
         blockHtml: null,
         list: null,
+        noChips: false,
         baseUrl: location.toString()
     }, dropdown);
 
@@ -105,6 +107,7 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
         } else {
             listOutput = dropdown.querySelector('.list');
         }
+
         if (listOutput) {
             listOutput.classList.add('fk-blocks');
             if (!options.list || _(options.list).closest('.fk-dropdown').length > 0) {
@@ -235,18 +238,26 @@ FilterKit.Util.SelectionDropdown = function (el, options) {
     collectionView = new FilterKit.CollectionViews.Div(itemContainer, collection, { showSelected: options.multiple ? 'hidden' : 'highlighted', multiple: options.multiple });
 
     if (options.multiple) {
-        chips = new FilterKit.SelectOutput.Chips(valueLabel, { name: options.fieldName, addHiddenInput: true });
-        outputs.push(chips);
-        chips.on('removeValue', function (value) {
-            collection.unselectItem(value);
-        });
+        if (!options.noChips) {
+            chips = new FilterKit.SelectOutput.Chips(valueLabel, { name: options.fieldName, addHiddenInput: true });
+            outputs.push(chips);
+            if (options.chipHtml) {
+                chips.chipHtml = (typeof options.chipHtml == 'string') ? templatify(options.chipHtml) : options.chipHtml;
+            }
+            chips.on('removeValue', function (value) {
+                collection.unselectItem(value);
+            });
+        }
 
         if (listOutput) {
-            list = new FilterKit.SelectOutput.Blocks(listOutput);
+            list = new FilterKit.SelectOutput.Blocks(listOutput, { name: options.fieldName, addHiddenInput: options.noChips });
             outputs.push(list);
             if (options.blockHtml) {
                 list.blockHtml = (typeof options.blockHtml == 'string') ? templatify(options.blockHtml) : options.blockHtml;
             }
+            list.on('removeValue', function (value) {
+                collection.unselectItem(value);
+            });
         }
     } else {
         outputs.push(new FilterKit.SelectOutput.Text(valueLabel));

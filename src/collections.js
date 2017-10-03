@@ -130,12 +130,19 @@ FilterKit.Collections.Base = extend(UtilEventDispatcher, {
         var elements, callback, that, uid;
 
         function elementToItem(el) {
-            var item;
+            var item, index, attr, key;
 
             if (el.hasAttribute('data-item')) {
                 item = JSON.parse(atob(el.getAttribute('data-item')));
             } else {
                 item = { value: el.getAttribute('data-value') || uid+'', label: el.textContent.replace(/^\s+|\s+$/g, '') };
+                for (index = 0; index < el.attributes.length; index++) {
+                    attr = el.attributes[index];
+                    if (attr.name.substr(0, 5) == 'data-' && attr.name != 'data-value') {
+                        key = attr.name.substr(5).replace(/-([a-zA-Z])/g, function (p, m1) { return m1.toUpperCase(); });
+                        item[key] = attr.value;
+                    }
+                }
             }
             if (item.value == uid) {
                 uid++;
@@ -287,7 +294,7 @@ FilterKit.Collections.AjaxHTML = extend(FilterKit.Collections.AjaxJSON, {
             response = JSON.parse(responseText);
 
             if (response && (this.options.htmlKey in response)) {
-                this.dispatch('update', response[this.options.htmlKey]);
+                this.dispatch('update', response[this.options.htmlKey], response.pages||null);
             } else {
                 response = null;
             }
@@ -307,7 +314,7 @@ FilterKit.Collections.AjaxAutoselect = extend(FilterKit.Collections.AjaxJSON, {
 
             if (response) {
                 if (this.options.htmlKey && (this.options.htmlKey in response)) {
-                    this.dispatch('update', response[this.options.htmlKey]);
+                    this.dispatch('update', response[this.options.htmlKey], response.pages||null);
                 } else {
                     this.parseResponseJSON(response);
                 }

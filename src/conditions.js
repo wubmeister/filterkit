@@ -2,12 +2,12 @@
 
 FilterKit.Conditions.Base = extend(Object, {
     operand: 'base',
-    init: function (initValue, filterValue) {
+    init: function (initValue, filterValue, cancelTags) {
         this.value = [];
         this.filterValue = filterValue;
-        this.addValue(initValue || '');
+        this.addValue(initValue || '', cancelTags);
     },
-    addValue: function (value) {
+    addValue: function (value, cancelTags) {
         if (this.value instanceof Array) {
             if (value instanceof Array) {
                 this.value = this.value.concat(value);
@@ -22,7 +22,9 @@ FilterKit.Conditions.Base = extend(Object, {
             }
         }
 
-        this.filterValue.addTag(value, this.operand);
+        if (!cancelTags) {
+            this.filterValue.addTag(value, this.operand);
+        }
     },
     replaceValue: function (value) {
         if (value instanceof Array) {
@@ -104,9 +106,11 @@ FilterKit.Conditions.Eq = extend(FilterKit.Conditions.Base, {
 
 FilterKit.Conditions.Like = extend(FilterKit.Conditions.Base, {
     operand: 'like',
-    addValue: function (value) {
+    addValue: function (value, cancelTags) {
         this.value = value.toLowerCase();
-        this.filterValue.addTag(value, this.operand);
+        if (!cancelTags) {
+            this.filterValue.addTag(value, this.operand);
+        }
     },
     replaceValue: function (value) {
         this.value = value.toLowerCase();
@@ -180,11 +184,11 @@ FilterKit.Conditions.Gte = extend(FilterKit.Conditions.Base, {
 
 FilterKit.Conditions.Geo = extend(FilterKit.Conditions.Base, {
     operand: 'geo',
-    init: function (initValue, filterValue) {
-        this.addValue(initValue);
+    init: function (initValue, filterValue, cancelTags) {
+        this.addValue(initValue, cancelTags);
         this.filterValue = filterValue;
     },
-    addValue: function (value) {
+    addValue: function (value, cancelTags) {
         var values;
 
         if (value instanceof Array) {
@@ -196,6 +200,10 @@ FilterKit.Conditions.Geo = extend(FilterKit.Conditions.Base, {
         this.lng = parseFloat(values[1]);
         this.distance = parseFloat(values[2]);
         this.searchString = values.length > 3 ? values.slice(3).join(',') : null;
+
+        if (!cancelTags) {
+            this.filterValue.addTag(this.lat + ',' + this.lng + ',' + this.distance + (this.searchString ? ',' + this.searchString : ''), this.operand);
+        }
     },
     removeValue: function (value) {
         this.lat = null;

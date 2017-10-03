@@ -23,6 +23,8 @@ FilterKit.SelectOutput.Chips = extend(UtilEventDispatcher, {
                 output.removePreselected();
             }
         });
+
+        _(this.container).trigger('fk.init');
     },
     getLastChip: function () {
         var lastChip, child;
@@ -38,8 +40,18 @@ FilterKit.SelectOutput.Chips = extend(UtilEventDispatcher, {
     },
     createChild: function (item) {
         var chip = FilterKit.createElement('div.chip', { dataValue: item.value });
-        chip.innerHTML = item.label + ' <i class="close icon"></i>' +
-            (this.options.addHiddenInput && this.options.name ? '<input type="hidden" name="' + this.options.name + '" value="' + item.value + '">' : '');
+        if (this.chipHtml) {
+            chip.innerHTML = this.chipHtml(item);
+            if (!chip.querySelector('.close.icon')) {
+                chip.innerHTML += '<i class="close icon"></i>';
+            }
+            if (this.options.addHiddenInput && this.options.name) {
+                chip.innerHTML += '<input type="hidden" name="' + this.options.name + '" value="' + item.value + '">';
+            }
+        } else {
+            chip.innerHTML = item.label + ' <i class="close icon"></i>' +
+                (this.options.addHiddenInput && this.options.name ? '<input type="hidden" name="' + this.options.name + '" value="' + item.value + '">' : '');
+        }
         return chip;
     },
     selectValue: function (item, fullItem) {
@@ -48,6 +60,8 @@ FilterKit.SelectOutput.Chips = extend(UtilEventDispatcher, {
         child = this.createChild(item);
         lastChip = this.getLastChip();
         this.container.insertBefore(child, lastChip ? lastChip.nextSibling : this.container.firstChild);
+
+        _(this.container).trigger('fk.additem', { item: lastChip });
     },
     unselectValue: function (value) {
         var chip = this.container.querySelector('[data-value="' + value + '"]');
@@ -81,6 +95,13 @@ FilterKit.SelectOutput.Blocks = extend(FilterKit.SelectOutput.Chips, {
     createChild: function (item) {
         var block = FilterKit.createElement('div.block', { dataValue: item.value });
         block.innerHTML = this.blockHtml ? this.blockHtml(item) : item.label;
+        if (this.options.addHiddenInput && this.options.name) {
+            block.innerHTML += '<input type="hidden" name="' + this.options.name + '" value="' + item.value + '">';
+        }
+        if (!block.querySelector('.close.icon')) {
+            block.innerHTML += '<i class="close icon"></i>';
+        }
+        block.setAttribute('data-value', item.value);
         return block;
     }
 });

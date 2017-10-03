@@ -12,10 +12,12 @@ var FilterKit = {
         return multi ? [ el ] : el;
     },
     resolveOptions: function (options, defaults, element) {
-        var key, fixedKey, value, attr;
+        var key, fixedKey, value, attr, result;
 
         options = options || {};
         defaults = defaults || {};
+
+        result = Object.create(options);
 
         if (element) {
             for (key in element.attributes) {
@@ -27,21 +29,21 @@ var FilterKit = {
                         if (value == 'true' || value == 'false') {
                             value = value == 'true';
                         }
-                        options[key] = value;
+                        result[key] = value;
                     }
                 }
             }
         }
 
         for (key in defaults) {
-            if (!(key in options)) {
-                options[key] = defaults[key];
-            } else if (typeof options[key] == 'object' && typeof defaults[key] == 'object') {
-                options[key] = this.resolveOptions(options[key], defaults[key]);
+            if (!(key in result)) {
+                result[key] = defaults[key];
+            } else if (typeof result[key] == 'object' && typeof defaults[key] == 'object') {
+                result[key] = this.resolveOptions(result[key], defaults[key]);
             }
         }
 
-        return options;
+        return result;
     },
     createElement: function (spec, attrs, style) {
         var m, m2, i, tagName = 'div', el, key;

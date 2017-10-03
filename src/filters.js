@@ -4,16 +4,16 @@ FilterKit.Value = extend(Object, {
         this.name = name;
         this.filters = filters;
     },
-    addCondition: function (operand, value, replace) {
+    addCondition: function (operand, value, replace, cancelTags) {
         if (operand in this.conditions) {
             if (replace) {
-                this.conditions[operand].replaceValue(value);
+                this.conditions[operand].replaceValue(value, cancelTags);
             } else {
-                this.conditions[operand].addValue(value);
+                this.conditions[operand].addValue(value, cancelTags);
             }
         } else {
             cls = operand ? operand[0].toUpperCase() + operand.substr(1) : 'Eq';
-            this.conditions[operand] = new FilterKit.Conditions[cls](value, this);
+            this.conditions[operand] = new FilterKit.Conditions[cls](value, this, cancelTags);
         }
     },
     removeCondition: function (operand, value) {
@@ -41,7 +41,7 @@ FilterKit.Value = extend(Object, {
 
         for (key in this.conditions) {
             part = this.conditions[key].serializeQuery(this.name);
-            if (part && part != '') {
+            if (part && part != '' && part != '&') {
                 queryParts.push(part);
             }
         }
@@ -92,7 +92,7 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
 
         return match;
     },
-    addValue: function (name, value, operand, replace) {
+    addValue: function (name, value, operand, replace, cancelTags) {
         var tag, key;
 
         operand = operand || 'eq';
@@ -100,42 +100,16 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
         if (!(name in this.filters)) {
             this.clearValue(name);
             this.filters[name] = new FilterKit.Value(name, this);
-            // this.filterTags[name] = {};
         }
-        this.filters[name].addCondition(operand, value, replace);
+        this.filters[name].addCondition(operand, value, replace, cancelTags);
 
-        // tag = {
-        //     key: name,
-        //     value: value,
-        //     keyLabel: name,
-        //     valueLabel: value,
-        //     operand: operand,
-        //     hash: this.getHash(name, value)
-        // };
-        // if (name in this.keyLabels) {
-        //     tag.keyLabel = this.keyLabels[name];
-        // }
-        // if (tag.hash in this.valueLabels) {
-        //     tag.valueLabel = this.valueLabels[tag.hash];
-        // }
-        // if (operand == 'geo' && this.filters[name].conditions.geo.searchString) {
-        //     tag.valueLabel = this.filters[name].conditions.geo.searchString;
-        // }
-        // this.filterTags[name][tag.hash] = tag;
-
-        // if ((!replace || isNew) && value && value != '') this.filterCount++;
-        // else if (replace && !isNew && (!value || value == '')) this.filterCount--;
-
-        // if (this.filterCount != origFilterCount) {
-
-            if (!this.isBatching) {
-                if (!this.eventsCancelled) {
-                    this.dispatch('change');
-                }
-            } else {
-                this.batchChanges++;
+        if (!this.isBatching) {
+            if (!this.eventsCancelled) {
+                this.dispatch('change');
             }
-        // }
+        } else {
+            this.batchChanges++;
+        }
     },
     removeValue: function (name, value, operand) {
         var hash;
@@ -250,16 +224,19 @@ FilterKit.Filters = extend(UtilEventDispatcher, {
 
         if ((name in this.filterTags) && (hash in this.filterTags[name])) {
             if (!this.eventsCancelled) {
-                that.dispatch('removetag', this.filterTags[name][hash]);
+                this.dispatch('removetag', this.filterTags[name][hash]);
             }
             delete this.filterTags[name][hash];
         }
     },
     serializeQuery: function (clearKey) {
-        var key, queryParts = [], result;
+        var key, queryParts = [], result, part;
 
         for (key in this.filters) {
-            queryParts.push(this.filters[key].serializeQuery());
+            part = this.filters[key].serializeQuery();
+            if (part && part != '' && part != '&') {
+                queryParts.push(part);
+            }
         }
 
         result = queryParts.join('&');

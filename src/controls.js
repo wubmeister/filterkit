@@ -18,6 +18,10 @@ FilterKit.Controls.Textfield = extend(Object, {
             updateTags: true
         }, input);
 
+        this.filters = filters;
+        this.options = options;
+        this.input = input;
+
         if (input) {
             if (!input.name) {
                 input.name = FilterKit.getUid('textfield');
@@ -37,10 +41,8 @@ FilterKit.Controls.Textfield = extend(Object, {
                 handlingInput = true;
                 if (e.which == 13) {
                     e.preventDefault();
-                    // if (this.value != this.lastValue) {
-                        filters.addValue(this.name, this.value, options.operand, true, !options.updateTags);
-                        that.onChange(this.value);
-                    // }
+                    filters.addValue(this.name, this.value, options.operand, true, !options.updateTags);
+                    that.onChange(this.value);
                 } else if (options.realTime) {
                     if (this.value != this.lastValue) {
                         filters.addValue(this.name, this.value, options.operand, true, !options.updateTags);
@@ -90,6 +92,13 @@ FilterKit.Controls.Textfield = extend(Object, {
     onNavigationKey: function (key) {
     },
     onChange: function (value) {
+    },
+    submitChanges: function () {
+        console.log('submitting thhe changes', this);
+        handlingInput = true;
+        this.filters.addValue(this.input.name, this.input.value, this.options.operand, true, !this.options.updateTags);
+        this.onChange(this.input.value);
+        handlingInput = false;
     }
 });
 FilterKit.Controls.Checkboxes = extend(Object, {
